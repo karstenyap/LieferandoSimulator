@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - LieferSpatz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='restaurant_or_customer_styles.css') }}">
+</head>
+<body>
+    <div class="content">
+        <h1 class="page-title">Join Us!</h1> <!-- Page Title -->
+
+        <div class="register-options">
+            <!-- Restaurant Register Card -->
+            <div class="register-card">
+                <h2>Restaurants</h2>
+                <p>
+                    Showcase your restaurant to a broader audience by joining our platform! 
+                    Easily manage online orders and let customers enjoy your dishes delivered right to their doorsteps.
+                </p>
+                <button onclick="window.location.href='/restaurant-register'">Register as Restaurant</button>
+            </div>
+
+            <span class="or">or</span>
+
+            <!-- Customer Register Card -->
+            <div class="register-card">
+                <h2>Customers</h2>
+                <p>
+                    Join our community today and explore exclusive deals from your favorite restaurants. 
+                    As a welcome gift, enjoy €100 credit for your first orders! Don’t wait—sign up and start indulging now!
+                </p>
+                <button onclick="window.location.href='/customer-register'">Register as Customer</button>
+            </div>
+        </div>
+    </div>
+    
+    
+</body>
+</html>
