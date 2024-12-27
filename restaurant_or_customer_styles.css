@@ -1,0 +1,127 @@
+/* Import Fredoka One from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredoka One', Arial, sans-serif;
+    background-image: url('/static/background.JPG'); /* Keep the original background */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+
+}
+
+/* Content container centered on the page */
+.content {
+    text-align: center;
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+}
+
+/* Page Title (Register and Sign In) */
+.page-title {
+    font-size: 64px;
+    font-weight: bold;
+    color: black; /* Black text color */
+    text-shadow: 2px 2px 4px white; /* White shadow for contrast */
+    margin-bottom: 40px; /* Space below the title */
+}
+
+/* Layout for register or sign-in options */
+.register-options, .signin-options {
+    display: flex;
+    justify-content: center; /* Center the choices horizontally */
+    align-items: center; /* Align items vertically */
+    gap: 40px; /* Add horizontal spacing between the cards and "or" */
+    width: 100%; /* Ensure the layout spans the full width */
+}
+
+/* Register or Sign-In Card Styles */
+.register-card, .signin-card {
+    background: linear-gradient(145deg, #f8e8f6, #ffffff); /* Light pastel gradient */
+    border-radius: 12px; /* Rounded corners */
+    padding: 25px;
+    width: 45%; /* Adjust width for responsiveness */
+    text-align: center;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2), -5px -5px 15px rgba(255, 255, 255, 0.5); /* 3D shadow effect */
+    color: #333; /* Dark gray for readability */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+}
+
+/* Hover Effect for Cards */
+.register-card:hover, .signin-card:hover {
+    transform: translateY(-5px); /* Lift on hover */
+    box-shadow: 7px 7px 20px rgba(0, 0, 0, 0.3), -7px -7px 20px rgba(255, 255, 255, 0.6); /* Enhanced shadow */
+}
+
+/* Paragraph inside the cards */
+.register-card p, .signin-card p {
+    font-size: 26px;
+    line-height: 1.5;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+/* Buttons within Register or Sign-In card */
+button {
+    font-family: inherit;
+    padding: 12px 24px;
+    background: linear-gradient(145deg, #e8d6f0, #d6c4e8); /* Pastel purple gradient */
+    color: #333; /* Dark text for readability */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1), -2px -2px 10px rgba(255, 255, 255, 0.8);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 10px; /* Space above buttons */
+}
+
+/* Hover effect for buttons */
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.2), -3px -3px 12px rgba(255, 255, 255, 0.7);
+}
+
+/* OR Text */
+.or {
+    font-size: 32px;
+    color: black; /* Match "Register" color */
+    text-shadow: 2px 2px 4px white; /* White shadow for consistency */
+    font-weight: bold;
+    text-align: center; /* Center "or" text */
+    padding: 0 20px; /* Add some inner spacing around the "or" */
+}
+
+/* Section Titles (Restaurant, Customers) */
+.section-title {
+    font-size: 32px; /* Updated font size to 32px for both Register and Sign In */
+    font-weight: bold;
+    color: black;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px white; /* White shadow to match the title */
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 768px) {
+    .register-options, .signin-options {
+        flex-direction: column; /* Stack choices and "or" vertically */
+        gap: 20px; /* Adjust spacing for smaller screens */
+        justify-content: center; /* Center the items in the column layout */
+        align-items: center; /* Align the items in the center vertically */
+    }
+    .register-card, .signin-card {
+        width: 80%; /* Adjust width for smaller screens */
+        margin-bottom: 20px; /* Space between cards */
+    }
+}
