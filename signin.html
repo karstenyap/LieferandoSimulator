@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - LieferSpatz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='restaurant_or_customer_styles.css') }}">
+</head>
+<body>
+    <div class="content">
+        <h1 class="page-title">Welcome Back!</h1> <!-- Page Title -->
+
+        <div class="signin-options">
+            <!--Restaurant Signin Card-->
+            <div class="signin-card">
+                <h3 class= "section-title">Restaurant</h3>
+                <p>
+                    Welcome back! Manage your restaurant, update your menu, and connect with hungry customers eagerly waiting for your delicious offerings.  
+                    Sign in now and keep your business thriving!
+                </p>                
+                
+                <button onclick="window.location.href='/restaurant-signin'">Let me visit my Restaurant!</button>
+            </div>
+
+            <span class="or">or</span>
+
+            <div class="signin-card">
+                <!--Customer signin card-->
+                <h3 class= "section-title">Customer</h3>
+                <p>
+                    Welcome back! Discover the latest deals from your favorite restaurants and make the most of your dining experiences. 
+                    Your favorite dishes are just a click away—sign in now and continue your journey with us!
+                </p>                
+                
+                <button onclick="window.location.href='/customer-signin'">I want to buy food again please!</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
