@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LieferSpatz</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='index_styles.css') }}">
+</head>
+<body>
+    <div class="content">
+        <h1 class="header" id="header">Welcome to LieferSpatz</h1>
+        
+        <!-- Subheader -->
+        <div class="subheader-box">
+            Where you can find all delicious treats to satisfy your hunger, just one click away! <br>
+            You click, we send.
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons">
+            <button class="signin"><a href="/signin">Sign In</a></button>
+            <button class="register"><a href="/register">Register</a></button>
+        </div>
+
+        <!-- Add GIF -->
+        <img src="{{ url_for('static', filename='stickers.gif') }}" alt="Sticker GIF" class="static-gif">
+    </div>
+
+    <!-- Link to the JS file -->
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+
+</body>
+</html>
