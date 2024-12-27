@@ -1,0 +1,120 @@
+/* Import Fredoka One from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredoka One', Arial, sans-serif; /* Apply the font */
+    background-image: url('/static/background.JPG');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+
+}
+
+.content {
+    text-align: center;
+}
+
+/* Style for the header (for "Welcome to LieferSpatz") */
+.header {
+    font-size: 72px;
+    font-weight: bold;
+    color: #808080; /* Gray color resembling old-school game text */
+    letter-spacing: 2px;
+    text-transform: uppercase; /* Make text all uppercase */
+    animation: blink 1s step-start infinite, fadeIn 2s forwards; /* Both blink and fade-in effects */
+    text-shadow: 
+        2px 2px 0 #000, 
+        -2px -2px 0 #000, 
+        2px -2px 0 #000, 
+        -2px 2px 0 #000; /* Black border effect */
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Fade-in effect for the header text */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    50%{
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Style for the subheader (black text with white shadow) */
+.subheader-box {
+    font-size: 24px;
+    color: black; /* Black color for the font */
+    /*font-weight: bold; /* Make the text bold */
+    letter-spacing: 1px;
+    /*text-shadow: 
+        1px 1px 0 white, 
+        -1px -1px 0 white, 
+        1px -1px 0 white, 
+        -1px 1px 0 white; /* White text shadow */
+    margin-bottom: 20px;
+}
+
+
+
+/* Style for the buttons */
+.buttons button {
+    font-size: 18px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid #800000; /* Burgundy border */
+    background: linear-gradient(145deg, #f8e8f6, #ffffff); /* Light pastel gradient */
+    color: #333; /* Dark text for readability */
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: 'Fredoka One', Arial, sans-serif; /* Ensure button text uses Fredoka One font */
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8); /* Subtle 3D shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: auto;
+    min-width: 120px;
+}
+
+/* Hover effect for buttons */
+.buttons button:hover {
+    transform: translateY(-3px); /* Slight lift on hover */
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7); /* Enhanced shadow */
+    background: linear-gradient(145deg, #f4dff0, #ffebff); /* Slightly brighter pastel gradient */
+}
+
+
+/* Ensure the <a> tags inside the buttons take full space */
+.buttons a {
+    font-family: inherit;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    line-height: 50px; /* Centers text vertically inside the button */
+}
+
+/* Style for the GIF */
+.static-gif {
+    display: block; /* Center-align the GIF as a block element */
+    margin: 0 auto 20px; /* Center it horizontally and add spacing below */
+    width: 200px; /* Adjust size as needed */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 12px; /* Optional: Add rounded corners */
+}
