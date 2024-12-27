@@ -1,0 +1,73 @@
+CREATE TABLE "Customer" (
+	"ID"	INTEGER,
+	"Name"	TEXT NOT NULL UNIQUE,
+	"Email"	TEXT NOT NULL UNIQUE,
+	"Password"	TEXT NOT NULL,
+	"Phone_number"	INTEGER NOT NULL,
+	"Street"	TEXT NOT NULL,
+	"House_number"	INTEGER NOT NULL,
+	"Postcode"	INTEGER NOT NULL,
+	"City"	TEXT NOT NULL,
+	"Balance"	INTEGER DEFAULT 100,
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+CREATE TABLE "Restaurant" (
+	"ID"	INTEGER,
+	"Name"	TEXT NOT NULL,
+	"Email"	NUMERIC NOT NULL UNIQUE,
+	"Password"	TEXT NOT NULL,
+	"Phone_number"	INTEGER NOT NULL,
+	"Street"	TEXT NOT NULL,
+	"Building_number"	INTEGER NOT NULL,
+	"Postcode"	TEXT NOT NULL,
+	"City"	TEXT NOT NULL,
+	"Image"	TEXT,
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+CREATE TABLE "OpeningHours" (
+	"ID"	INTEGER,
+	"Restaurant_id"	INTEGER NOT NULL,
+	"day"	TEXT NOT NULL,
+	"open_time"	TEXT,
+	"close_time"	TEXT,
+	"is_closed"	INTEGER NOT NULL,
+	PRIMARY KEY("ID" AUTOINCREMENT),
+	FOREIGN KEY("Restaurant_id") REFERENCES "Restaurant"("ID")
+);
+
+CREATE TABLE "Menu" (
+	"ID"	INTEGER,
+	"Restaurant_id"	INTEGER NOT NULL,
+	"Item_name"	TEXT NOT NULL,
+	"Price"	INTEGER NOT NULL,
+	"Description"	TEXT,
+	"Image"	TEXT,
+	PRIMARY KEY("ID" AUTOINCREMENT),
+	FOREIGN KEY("Restaurant_id") REFERENCES "Restaurant"("ID")
+);
+
+CREATE TABLE "Cart" (
+	"ID"	INTEGER,
+	"Customer_id"	INTEGER NOT NULL,
+	"Restaurant_id"	INTEGER NOT NULL,
+	"Menu_Item_id"	INTEGER NOT NULL,
+	"Quantity"	INTEGER NOT NULL,
+	"Remark"	TEXT,
+	UNIQUE("Customer_id","Menu_Item_id"),
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+CREATE TABLE "Orders" (
+	"Orders_id"	INTEGER,
+	"Customer_id"	INTEGER NOT NULL,
+	"Restaurant_id"	INTEGER NOT NULL,
+	"Total_Amount"	INTEGER NOT NULL,
+	"Order_Status"	TEXT DEFAULT 'Pending' CHECK("Order_Status" IN ('Pending', 'Completed', 'Cancelled')),
+	"Remark"	TEXT,
+	"Order_Date"	TEXT DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY("Orders_id" AUTOINCREMENT),
+	FOREIGN KEY("Customer_id") REFERENCES "Customer"("ID"),
+	FOREIGN KEY("Restaurant_id") REFERENCES "Restaurant"("ID")
+);
