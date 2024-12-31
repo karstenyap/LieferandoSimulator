@@ -1,36 +1,41 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-import sqlite3
 import os
+import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
-connection = sqlite3.connect('Main.db', check_same_thread=False)
-
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Replace with a strong, random key
-DATABASE = 'Main.db'
 
-UPLOAD_FOLDER = 'static/uploads'
+# Secret Key for session management (use environment variable for production)
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your_static_secret_key')
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Ensure upload directory exists
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
-# Function to check allowed file extensions
+# Utility function to check allowed file extensions
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Function to execute database queries
+# Utility function to execute queries
 def execute_query(query, params=(), fetch_one=False, fetch_all=False, fetch_lastrowid=False):
-    with sqlite3.connect(DATABASE) as conn:
-        cursor = conn.cursor()
-        cursor.execute(query, params)
-        conn.commit()
-        if fetch_one:
-            return cursor.fetchone()
-        if fetch_all:
-            return cursor.fetchall()
-        if fetch_lastrowid:
-            return cursor.lastrowid
+    try:
+        with sqlite3.connect(app.config.get('DATABASE', 'Main.db')) as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            conn.commit()
+            if fetch_one:
+                return cursor.fetchone()
+            if fetch_all:
+                return cursor.fetchall()
+            if fetch_lastrowid:
+                return cursor.lastrowid
+    except sqlite3.Error as e:
+        app.logger.error(f"Database error: {e}")
+        raise
 
+# Route for Home
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -38,17 +43,6 @@ def index():
 @app.route('/register')
 def register():
     return render_template('register.html')
-
-import os
-from werkzeug.utils import secure_filename
-
-UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/restaurant-register', methods=['GET', 'POST'])
 def restaurant_register():
@@ -149,13 +143,13 @@ def menu_creation():
         for item in menu_items:
             execute_query(query, item)
 
-        return redirect(url_for('restaurant_signin'))
+        return redirect(url_for('success'))
 
     return render_template('menu.html', Restaurant_id=restaurant_id)
 
 @app.route('/success')
 def success():
-    return 'Successful'
+     return render_template('success.html')
 
 @app.route('/customer-register', methods=['GET', 'POST'])
 def customer_register():
@@ -186,8 +180,9 @@ def customer_register():
 
 @app.route('/signin')
 def signin():
-    return render_template('signin.html')
+     return render_template('signin.html')
 
+# Route for Restaurant Sign In
 @app.route('/restaurant-signin', methods=['GET', 'POST'])
 def restaurant_signin():
     if request.method == 'POST':
@@ -199,17 +194,13 @@ def restaurant_signin():
         restaurant = execute_query(query, (email, password), fetch_one=True)
 
         if restaurant:
-            # Login successful, store restaurant details in session
             session['restaurant_id'] = restaurant[0]  # Store the restaurant ID in session
             session['restaurant_name'] = restaurant[1]  # Store the restaurant name in session
             return redirect(url_for('menu_or_order', Restaurant_id=restaurant[0]))
         else:
-            # Login failed
-            error_message = "Invalid email or password"
-            return render_template('restaurant_signin.html', error=error_message)
+            return render_template('restaurant_signin.html', error="Invalid email or password")
 
     return render_template('restaurant_signin.html')
-
 
 @app.route('/menu_or_order')
 def menu_or_order():
@@ -218,8 +209,16 @@ def menu_or_order():
     if not restaurant_id:
         return redirect(url_for('restaurant_signin'))
 
-    # Fetch restaurant details or menu items using restaurant_id if needed
-    return render_template('menu_or_order.html', Restaurant_id=restaurant_id)
+    query = "SELECT Name FROM Restaurant WHERE ID = ?"
+    restaurant = execute_query(query, (restaurant_id,), fetch_one=True)
+
+    if not restaurant:
+        return "Restaurant not found", 404
+
+    restaurant_name = restaurant[0]  # Accessing the first column of the tuple
+    return render_template('menu_or_order.html', Restaurant_id=restaurant_id, Restaurant_name=restaurant_name)
+
+
 
 @app.route('/menu_management', methods=['GET', 'POST'])
 def menu_management():
@@ -234,26 +233,30 @@ def menu_management():
 
     return render_template('menu_management.html', menu_items=menu_items, Restaurant_id=restaurant_id)
 
-
 @app.route('/edit_menu_item/<int:item_id>', methods=['GET', 'POST'])
 def edit_menu_item(item_id):
     if request.method == 'POST':
-        # Update menu item
+        # Fetch existing image before the update
+        query = "SELECT Image FROM Menu WHERE ID = ?"
+        current_image = execute_query(query, (item_id,), fetch_one=True)
+        current_image = current_image[0] if current_image else None
+        
+        # Prepare data to update
         data = {
             'Item_name': request.form['item_name'],
             'Price': request.form['price'],
             'Description': request.form['description'],
-            'Image': None
+            'Image': current_image  # Default to the current image if no new image is uploaded
         }
 
-        # Handle image upload
+        # Handle image upload if a new image is provided
         if 'image' in request.files:
             image_file = request.files['image']
             if image_file and allowed_file(image_file.filename):
-                filename = secure_filename(image_file.filename)
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                image_file.save(filepath)
-                data['Image'] = filepath  # Update image path in the database
+                image_filename = secure_filename(image_file.filename)
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                image_file.save(image_path)
+                data['Image'] = image_filename  # Update image path in the database if a new image is uploaded
 
         # Update query
         query = """
@@ -263,13 +266,15 @@ def edit_menu_item(item_id):
         """
         data['item_id'] = item_id
         execute_query(query, data)
-        return redirect(url_for('menu_or_order'))
+        return redirect(url_for('menu_management'))
 
     # Fetch menu item details for editing
     query = "SELECT ID, Item_name, Price, Description, Image FROM Menu WHERE ID = ?"
     menu_item = execute_query(query, (item_id,), fetch_one=True)
 
     return render_template('edit_menu_item.html', menu_item=menu_item)
+
+
 
 @app.route('/add_menu_item', methods=['GET', 'POST'])
 def add_menu_item():
@@ -350,9 +355,12 @@ def browse_restaurants():
 def view_orders():
     return "Orders Page"
 
+# Log out route
 @app.route('/logout')
 def logout():
-    return redirect(url_for('customer_signin'))
+    session.clear()
+    return redirect(url_for('index'))
+
 
 
 if __name__ == '__main__':
