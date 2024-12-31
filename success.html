@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration successful</title>
+    <!-- Link to the CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='success_styles.css') }}">
+</head>
+<body>
+    <div class="content">
+        <h1 class="header" id="header">Congratulations on your successful registration!</h1>
+        
+        <!-- Subheader -->
+        <div class="subheader-box">
+            <p>We are delighted to have you join us!</p>
+            <p>You can log in again here to visit your restaurant and see the progress of customers' orders.</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons">
+            <button class="signin"><a href="{{ url_for('restaurant_signin') }}">Sign In</a></button>
+            <button class="logout"><a href="/logout">Sign Out</a></button>
+        </div>
+
+        <!-- Add GIF -->
+        <img src="{{ url_for('static', filename='success.gif') }}" alt="Sticker GIF" class="success-gif">
+    </div>
+
+    <!-- Link to the JS file -->
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
