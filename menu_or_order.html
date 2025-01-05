@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu_or_order_styles.css') }}">
+</head>
+<body>
+    <!-- Sign Out Button -->
+    <button class="sign-out-btn" onclick="window.location.href='/logout'">Sign Out</button>
+
+    <div class="content">
+        <h1 class="page-title">
+            <p>Hi {{ Restaurant_name }}!</p>
+            <p> Good to see you again.</p>
+        </h1> <!-- Page Title -->
+
+        <div class="mangement-options">
+            <!-- Menu Card -->
+            <div class="menu-card">
+                <h2>Menu Management</h2>
+                <p>
+                    Got new menu to offer? You can update and edit your restaurant here!
+                </p>
+                <button onclick="window.location.href='/menu_management?Restaurant_id={{ Restaurant_id }}'">Manage Menu</button>
+            </div>
+
+            <span class="or">or</span>
+
+            <!-- Order Card -->
+            <div class="order-card">
+                <h2>Order Management</h2>
+                <p>
+                    The customers are excited for what you have to offer! See how many orders that are requested!
+                </p>
+                <button onclick="window.location.href='/view-orders?Restaurant_id={{ Restaurant_id }}'">Order Requests</button>
+            </div>
+        </div>
+    </div>
+    
+    
+</body>
+</html>
