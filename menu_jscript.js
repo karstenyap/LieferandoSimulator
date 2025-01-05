@@ -42,14 +42,30 @@ function updateMenuItemFields(item, index) {
 }
 
 // Image Preview Functionality
-function previewImage(input, previewId) {
+// Image Preview Functionality
+function previewImage(input, previewId, uploadTextId) {
     const file = input.files[0];
     const preview = document.getElementById(previewId);
-    const reader = new FileReader();
+    const uploadText = document.getElementById(uploadTextId);
 
-    reader.onload = e => preview.src = e.target.result;
-    if (file) reader.readAsDataURL(file);
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = e => {
+            preview.src = e.target.result;
+            preview.style.display = 'block'; // Show the image preview
+            uploadText.style.display = 'none'; // Hide the "Click to Upload" text
+        };
+        
+        reader.readAsDataURL(file);
+    } else {
+        // If no file is selected, reset to default
+        preview.src = '';
+        preview.style.display = 'none';
+        uploadText.style.display = 'block';
+    }
 }
+
 
 // Form Validation
 function validateForm() {
