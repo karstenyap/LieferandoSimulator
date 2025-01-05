@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Menu</title>
+    <script src="/static/add_menu.js" defer></script>
+    <link rel="stylesheet" href="/static/add_menu_styles.css">
+</head>
+<body>
+    <div class="action-buttons-container">
+        <button class="sign-out-btn" onclick="window.location.href='/logout'">Sign Out</button>
+        <a href="{{ url_for('menu_management') }}" class="menu-management-link">Menu Management</a>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>Can't wait for your new product!</h1>
+        </header>
+
+        <form action="/add_menu_item" method="POST" enctype="multipart/form-data" class="form-container" onsubmit="return validateForm()">
+
+            <input type="hidden" name="Restaurant_id" value="{{ Restaurant_id }}">
+            
+            <!-- Menu Items Container -->
+            <div id="menu-items-container">
+                <!-- Menu Item Template -->
+                <div class="menu-item" id="menu-item-0">
+                   <div class="image-container">
+                      <div class="item-picture-container">
+                         <p id="upload-text-0" class="upload-placeholder">Click to Upload</p>
+                         <img id="image-preview-0" src="#" alt="Item Image" style="display: none;" />
+                         <input 
+                            type="file" 
+                            id="image_0" 
+                            name="image[]" 
+                            accept="image/*" 
+                            onchange="previewImage(this, 'image-preview-0', 'upload-text-0')" 
+                            required />
+                      </div>
+                  </div>
+            
+
+                    <!-- Item Details Section -->
+                    <div class="menu-item-details">
+                        <div class="form-group">
+                            <label for="item_name_0">Item Name</label>
+                            <input type="text" id="item_name_0" name="item_name[]" placeholder="Enter item name" required maxlength="50">
+                            <small class="input-instruction">Max 50 characters</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price_0">Price</label>
+                            <input type="number" id="price_0" name="price[]" placeholder="Enter price" required step="0.01">
+                            <small class="input-instruction">Enter a valid price</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description_0">Description</label>
+                            <textarea id="description_0" name="description[]" placeholder="Enter item description" required maxlength="100"></textarea>
+                            <small class="input-instruction" id="description-word-count-0">0/100 words</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-container">
+                <button type="button" id="add-menu-item-btn">Add Menu Item</button>
+                <button type="button" id="delete-menu-item-btn" onclick="deleteLastMenuItem()">Delete Last Item</button>
+                <button type="submit" id="save-menu-btn">Save Menu</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
