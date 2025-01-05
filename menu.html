@@ -13,19 +13,26 @@
             <h1>Create Menu</h1>
         </header>
         <form action="/menu-creation" method="POST" enctype="multipart/form-data" class="form-container" onsubmit="return validateForm()">
-            <input type="hidden" name="Restaurant_id" value="9">
+            <input type="hidden" name="Restaurant_id" value="{{ Restaurant_id }}">
             
             <!-- Menu Items Container -->
             <div id="menu-items-container">
                 <!-- Menu Item Template -->
                 <div class="menu-item" id="menu-item-0">
-                    <!-- Image Upload Section -->
-                    <div class="image-container">
-                        <div class="item-picture-container">
-                            <img id="image-preview-0" src="#" alt="Item Image" />
-                            <input type="file" id="image_0" name="image[]" accept="image/*" onchange="previewImage(this, 'image-preview-0')" required>
-                        </div>
-                    </div>
+                   <div class="image-container">
+                      <div class="item-picture-container">
+                         <p id="upload-text-0" class="upload-placeholder">Click to Upload</p>
+                         <img id="image-preview-0" src="#" alt="Item Image" style="display: none;" />
+                         <input 
+                            type="file" 
+                            id="image_0" 
+                            name="image[]" 
+                            accept="image/*" 
+                            onchange="previewImage(this, 'image-preview-0', 'upload-text-0')" 
+                            required />
+                      </div>
+                  </div>
+            
 
                     <!-- Item Details Section -->
                     <div class="menu-item-details">
