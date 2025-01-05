@@ -274,12 +274,9 @@ def edit_menu_item(item_id):
 
     return render_template('edit_menu_item.html', menu_item=menu_item)
 
-
-
 @app.route('/add_menu_item', methods=['GET', 'POST'])
 def add_menu_item():
     restaurant_id = session.get('restaurant_id')
-
     if not restaurant_id:
         return redirect(url_for('restaurant_signin'))
 
@@ -300,17 +297,20 @@ def add_menu_item():
                 filename = secure_filename(image_file.filename)
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 image_file.save(filepath)
-                data['Image'] = filepath  # Save image path to the database
+                data['Image'] = f'uploads/{filename}'  # Save the relative path
 
-        # Insert query
+        # Insert into database
         query = """
         INSERT INTO Menu (Restaurant_id, Item_name, Price, Description, Image)
         VALUES (:Restaurant_id, :Item_name, :Price, :Description, :Image)
         """
         execute_query(query, data)
-        return redirect(url_for('menu_or_order'))
+        return redirect(url_for('menu_management'))  # Ensure the user sees the updated menu
 
-    return render_template('add_menu_item.html')
+    return render_template('add_menu_item.html', Restaurant_id=session.get('restaurant_id'))
+
+
+
 
 
 @app.route('/customer-signin', methods=['GET', 'POST'])
