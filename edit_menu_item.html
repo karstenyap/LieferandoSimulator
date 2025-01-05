@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Menu Item</title>
+    <link rel="stylesheet" href="/static/edit_menu_styles.css">
+    <script src="/static/edit_menu.js" defer></script>
+</head>
+<body>
+    <div class="action-buttons-container">
+        <button class="sign-out-btn" onclick="window.location.href='/logout'">Sign Out</button>
+        <a href="{{ url_for('menu_management') }}" class="menu-management-link">Menu Management</a>
+    </div>
+    
+    <div class="container">
+        <h1>Edit Menu</h1>
+        <form method="POST" enctype="multipart/form-data" class="menu-item">
+            <!-- Image Section -->
+            <div class="item-picture-container">
+                {% if menu_item[4] %}
+                    <img id="image-preview" src="{{ url_for('static', filename='uploads/' + menu_item[4]) }}" alt="Current Image">
+                {% else %}
+                    <div>No Image</div>
+                {% endif %}
+                <input type="file" name="image" onchange="previewImage(this, 'image-preview')" />
+            </div>
+
+            <!-- Details Section -->
+            <div class="menu-item-details">
+                <label for="item_name">Item Name:</label>
+                <input type="text" id="item_name" name="item_name" value="{{ menu_item[1] }}" required>
+
+                <label for="price">Price:</label>
+                <input type="number" id="price" step="0.01" name="price" value="{{ menu_item[2] }}" required>
+
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required>{{ menu_item[3] }}</textarea>
+            </div>
+            
+
+        </form>
+
+        <!-- Save Changes Button -->
+        <div class="button-container">
+              <button type="submit">Save Changes</button>
+        </div>
+    </div>
+</body>
+</html>
