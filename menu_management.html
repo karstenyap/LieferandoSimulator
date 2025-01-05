@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Management</title>
+    <link rel="stylesheet" href="/static/menu_management_styles.css">
+</head>
+<body>
+    <header>
+        <h1>Menu Management</h1>
+    </header>
+
+    <div class="action-buttons-container">
+        <button class="sign-out-btn" onclick="window.location.href='/logout'">Sign Out</button>
+        <!-- Updated: Remove button inside link and directly style the link -->
+        <a href="{{ url_for('add_menu_item') }}" class="add-item-link">Add Menu Item</a>
+    </div>
+
+    
+    <div id="menu-items-container">
+        {% for item in menu_items %}
+        <div class="menu-item">
+            <!-- Image Section -->
+            <div class="menu-item-image">
+                {% if item[4] %}
+                <img src="{{ url_for('static', filename='uploads/' + item[4]) }}" alt="Menu Item Image" class="menu-item-image" />
+                {% else %}
+                <div class="no-image">No Image</div>
+                {% endif %}
+            </div>
+        
+            <!-- Details Section -->
+            <div class="menu-item-details">
+                <h3 class="menu-item-name">{{ item[1] }}</h3>
+                <p class="menu-item-price">Price: €{{ item[2] }}</p>
+                <p class="menu-item-description">{{ item[3] }}</p>
+            </div>
+        
+            <!-- Actions Section -->
+            <div class="menu-item-actions">
+                <a href="/edit_menu_item/{{ item[0] }}" class="edit-button">Edit</a>
+            </div>
+        </div>
+        {% endfor %}
+        
+    </div>
+</div>
+</body>
+</html>
