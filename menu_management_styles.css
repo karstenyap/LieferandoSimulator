@@ -1,0 +1,199 @@
+/* Import Fredoka One from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredoka One', Arial, sans-serif;
+    background-image: url('/static/background.JPG');
+    background-size: cover;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #333;
+    padding-top: 50px;
+    box-sizing: border-box;
+}
+
+/* Header */
+header h1 {
+    font-size: 2.5rem; /* Adjust this value to change the font size */
+    color: #333;
+    margin-bottom: 10px;
+}
+
+
+/* Add Menu Item and Sign Out Button Container */
+/* Add Menu Item and Sign Out Button Container */
+.action-buttons-container {
+    position: absolute; /* Position the buttons relative to the page */
+    top: 20px; /* Optional: Position from the top */
+    right: 20px; /* Align buttons to the far right */
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    gap: 10px; /* Add spacing between buttons */
+    padding: 10px; /* Optional: Ensure the container has padding */
+}
+
+
+/* Add Menu Item Link */
+.add-item-link {
+    font-family: inherit;
+    background: linear-gradient(145deg, #f8e8f6, #ffffff); /* Light pastel gradient */
+    color: #333;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8); /* Subtle 3D shadow */
+    border-radius: 8px;
+    border: 2px solid #800000; /* Burgundy border */
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none; /* Remove underline */
+    text-align: center;
+    display: block;
+}
+
+.add-item-link:hover {
+    transform: translateY(-3px); /* Slight lift on hover */
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7); /* Enhanced shadow */
+    background: linear-gradient(145deg, #f4dff0, #ffebff); /* Slightly brighter pastel gradient */
+}
+
+/* Sign Out Button */
+.sign-out-btn {
+    font-family: inherit;
+    background: linear-gradient(145deg, #f8e8f6, #ffffff); /* Light pastel gradient */
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8); /* Subtle 3D shadow */
+    border-radius: 8px;
+    border: 2px solid #800000; /* Burgundy border */
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sign-out-btn:hover {
+    transform: translateY(-3px); /* Slight lift on hover */
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7); /* Enhanced shadow */
+    background: linear-gradient(145deg, #f4dff0, #ffebff); /* Slightly brighter pastel gradient */
+}
+
+/* Menu Items Container */
+#menu-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px; /* Adjust the max width for better container sizing */
+    margin: 0 auto; /* Center the content */
+}
+
+/* Menu Item */
+.menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgb(247, 219, 223);
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Image Section */
+.menu-item-image {
+    flex: 1;
+    text-align: center;
+}
+
+.menu-item-image img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.no-image {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ddd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Details Section */
+.menu-item-details {
+    flex: 3;
+    margin: 0 20px;
+}
+
+.menu-item-name {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.menu-item-price {
+    margin: 5px 0;
+    font-weight: bold;
+    font-size: 16px;
+    color: #555;
+}
+
+.menu-item-description {
+    margin: 0;
+    color: #666;
+}
+
+/* Actions Section */
+.menu-item-actions {
+    flex: 1;
+    text-align: right;
+}
+
+.edit-button {
+    background: linear-gradient(145deg, #d6c4e8, #b39ddb);
+    border: none;
+    padding: 12px 24px;
+    color: #333;
+    font-family: inherit;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.edit-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .menu-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .menu-item-image {
+        margin-bottom: 10px;
+    }
+
+    .menu-item-actions {
+        text-align: left;
+        margin-top: 10px;
+    }
+}
