@@ -18,16 +18,17 @@
                 <!-- First Column -->
                 <div class="column">
                     <label for="image">Restaurant Logo</label>
-                    <div class="profile-picture-container" onclick="document.getElementById('image').click()">
-                        <img id="image-preview" alt="Image Preview">
-                        <p>Click to Upload</p>
+                    <div class="image-container">
+                        <div class="profile-picture-container" onclick="document.getElementById('image').click()">
+                            <img id="image-preview" src="#" alt="Image Preview" />
+                            <input type="file" id="image" name="image[]" accept="image/*" style="display: none" onchange="previewImage(event)" required>
+                        </div>
                     </div>
-                    <input type="file" id="image" name="image" accept="image/*" style="display: none;" onchange="previewImage(event)">
                     
                     <p>
                         <label for="restaurant-name">Restaurant Name</label>
                         <input type="text" id="restaurant-name" name="restaurant_name" placeholder="Enter restaurant name" required>
-                        <span class="instruction">Maximum 10 words</span>
+                        <span class="instruction">Maximum 30 words</span>
                     </p>
                     <p>
                         <label for="email">Email</label>
@@ -49,16 +50,16 @@
                         <span class="instruction">Max 100 words</span>
                     </p>
                     <p>
-                        <label for="phone_number">Telephone</label>
-                        <input type="tel" id="phone" name="phone" placeholder="Enter phone number" required>
+                        <label for="phoneNumber">Telephone</label>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Enter phone number" required>
                     </p>
                     <p>
                         <label for="street">Street</label>
                         <input type="text" id="street" name="street" placeholder="Enter street name" required>
                     </p>
                     <p>
-                        <label for="building_number">Building Number</label>
-                        <input type="text" id="building_number" name="building_number" placeholder="Enter building number" required>
+                        <label for="buildingNumber">Building Number</label>
+                        <input type="text" id="buildingNumber" name="buildingNumber" placeholder="Enter building number" required>
                     </p>
                     <p>
                         <label for="postcode">Postcode</label>
