@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Restaurants</title>
+    <script src="/static/browse_restaurants_jscript.js" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='browse_restaurants_styles.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <h1>Lieferspatz</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('customer_dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('browse_restaurants') }}">Browse</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="welcome-banner">
+            <h2>Discover Restaurants Around You</h2>
+            <p>Click on a restaurant to view its menu and more details.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('browse_restaurants') }}">
+            <input type="text" id="search-input" name="search" placeholder="Search for restaurants...">
+            <button type="submit" id="search-button">Search</button>
+        </form>
+
+        <div class="restaurant-list">
+            {% for restaurant in restaurants %}
+            <div class="restaurant-card">
+                <a href="{{ url_for('restaurant_details', id=restaurant[0]) }}" class="restaurant-link">
+                    {% if restaurant[7] %}
+                            <img src="{{ url_for('static', filename='uploads/' + restaurant[7]) }}">
+                    {% endif %}
+                    <h3>{{ restaurant[1] }}</h3>
+                    <p><strong>Address:</strong> {{ restaurant[2] }} {{ restaurant[3] }}, {{ restaurant[4] }}, {{ restaurant[5] }}</p>
+                    <p><strong>Phone:</strong> {{ restaurant[6] }}</p>
+                </a>
+            </div>
+            {% endfor %}
+        </div>                
+    </main>
+</body>
+</html>
