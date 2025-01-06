@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Delivery Service</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='customer_dashboard_styles.css') }}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">
+            <h1>Lieferspatz</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Alert Container -->
+    <div id="alert-container"></div>
+
+    <main>
+        <section class="welcome-banner">
+            <h2>Welcome back, {{ user_name }}!</h2>
+            <p>What’s on your mind today? Browse your favorite restaurants, track your orders, or update your preferences.</p>
+        </section>
+
+        <section class="service-overview">
+            <div class="service-card">
+                <h3>Browse Restaurants</h3>
+                <p>Discover a wide variety of restaurants and cuisines near you.</p>
+                <a href="{{ url_for('browse_restaurants') }}" class="button">Start Browsing</a>
+            </div>
+            <div class="service-card">
+                <h3>Track Your Orders</h3>
+                <p>View your past and current orders and stay updated on delivery status.</p>
+                <a href="{{ url_for('view_orders') }}" class="button">View Orders</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Include JavaScript for Alert -->
+    <script src="{{ url_for('static', filename='js/dashboard_alert.js') }}"></script>
+    <script>
+        // Check for the success query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            displayAlert('Your order has been successfully placed!', 'success');
+        }
+    </script>
+</body>
+</html>
