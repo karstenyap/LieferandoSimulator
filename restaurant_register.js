@@ -39,8 +39,8 @@ function validateForm() {
 
     // Validate restaurant name (Max 10 words)
     const nameWords = restaurantName.split(/\s+/).filter(word => word.length > 0).length;
-    if (nameWords > 10) {
-        alert('Restaurant name cannot exceed 10 words');
+    if (nameWords > 30) {
+        alert('Restaurant name cannot exceed 30 words');
         return false; // Prevent form submission
     }
 
