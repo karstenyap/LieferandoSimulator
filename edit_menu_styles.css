@@ -76,6 +76,31 @@ body {
     background: linear-gradient(145deg, #f4dff0, #ffebff); /* Slightly brighter pastel gradient */
 }
 
+.back-button {
+    position: fixed; /* Sticks to the top-left corner regardless of scrolling */
+    top: 10px;       /* Distance from the top of the screen */
+    left: 10px;      /* Distance from the left of the screen */
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px;
+    color: #007BFF; /* Change to your preferred color */
+    transition: color 0.2s ease;
+    z-index: 1000; /* Ensures the button appears on top of other elements */
+}
+
+.back-button:hover {
+    color: #0056b3; /* Change hover color */
+}
+
+.arrow-icon {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor; /* Inherits the button's color */
+}
+
 /* Form Container */
 .container {
     width: 100%;
@@ -156,12 +181,16 @@ input, textarea {
 
 .button-container {
     display: flex;
-    justify-content: center; /* Centers the button horizontally */
-    align-items: center;    /* Centers the button vertically */
+    flex-direction: column; /* Stack buttons vertically */
+    justify-content: center;
+    align-items: center;
     margin-top: 20px;
+    gap: 15px; /* Add spacing between Save and Delete buttons */
 }
 
+
 button {
+    width: 200px;
     background: linear-gradient(145deg, #d6c4e8, #b39ddb);
     border: none;
     padding: 10px 20px; /* Compact padding */
@@ -182,6 +211,35 @@ button {
 button:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 8px hsl(0, 0%, 96%);
+}
+
+/* Specific style for Delete button */
+.delete-button {
+    background: linear-gradient(145deg, #ffcccc, #ffb3b3); /* Light red gradient */
+    color: #800000; /* Burgundy text */
+    border: 2px solid #800000; /* Same border as the sign-out button */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.delete-button:hover {
+    background: linear-gradient(145deg, #ff9999, #ff6666); /* Darker red gradient on hover */
+    transform: translateY(-3px); /* Slight lift on hover */
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7); /* Enhanced shadow */
+}
+
+.notification {
+    margin-top: 20px; /* Space between container and notification */
+    padding: 10px;
+    background-color: #f8d7da; /* Light red for visibility */
+    color: #721c24; /* Dark red text for contrast */
+    border: 1px solid #f5c6cb; /* Red border for consistency */
+    border-radius: 5px;
+    text-align: center;
+    width: calc(100% - 40px); /* Adjust width slightly if needed */
+    max-width: 600px; /* Set a max-width for readability */
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
 
