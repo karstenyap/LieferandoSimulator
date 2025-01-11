@@ -12,6 +12,13 @@
         <button class="sign-out-btn" onclick="window.location.href='/logout'">Sign Out</button>
         <a href="{{ url_for('menu_management') }}" class="menu-management-link">Menu Management</a>
     </div>
+
+    <button class="back-button" onclick="history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </button>
     
     <div class="container">
         <h1>Edit Menu</h1>
@@ -25,7 +32,7 @@
                 {% endif %}
                 <input type="file" name="image" onchange="previewImage(this, 'image-preview')" />
             </div>
-
+    
             <!-- Details Section -->
             <div class="menu-item-details">
                 <label for="item_name">Item Name:</label>
@@ -38,13 +45,19 @@
                 <textarea id="description" name="description" required>{{ menu_item[3] }}</textarea>
             </div>
             
-
+            <!-- Save and Delete Buttons -->
+            <div class="button-container">
+                <button type="submit" class="save-button">Save Changes</button>
+                <button type="button" class="delete-button" data-item-id="{{ menu_item[0] }}" onclick="deleteMenuItem(this)">Delete Item</button>
+            </div>
         </form>
-
-        <!-- Save Changes Button -->
-        <div class="button-container">
-              <button type="submit">Save Changes</button>
-        </div>
     </div>
+    
+   <!-- Notification section -->
+<div id="notification" class="notification" style="display: none;">
+    Menu item has been deleted. Please return to the menu.
+</div>
+    
+
 </body>
 </html>
