@@ -49,25 +49,25 @@ def restaurant_register():
     if request.method == 'POST':
         # Save form data
         data = {
-            'Name': request.form['restaurant_name'],
-            'Email': request.form['email'],
-            'Password': request.form['password'],
-            'Phone_number': request.form['phone'],
-            'Street': request.form['street'],
-            'Building_number': request.form['building_number'],
-            'Postcode': request.form['postcode'],
-            'City': request.form['city']
+            'Name': request.form.get('restaurant_name'),
+            'Email': request.form.get('email'),
+            'Password': request.form.get('password'),
+            'Phone_number': request.form.get('phoneNumber'),
+            'Street': request.form.get('street'),
+            'Building_number': request.form.get('buildingNumber'),
+            'Postcode': request.form.get('postcode'),
+            'City': request.form.get('city')
         }
-        
+
         # Handle image upload
-        image = request.files['image']
+        image = request.files.get('image')
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image.save(filepath)
             data['Image'] = filepath  # Save the file path to the database
         else:
-            return "Invalid file format", 400
+            return "Image upload is required and must be a valid file", 400
 
         # Insert into database
         query = """
@@ -241,7 +241,7 @@ def edit_menu_item(item_id):
         current_image = execute_query(query, (item_id,), fetch_one=True)
         current_image = current_image[0] if current_image else None
         
-        # Prepare data to update
+         # Prepare data to update
         data = {
             'Item_name': request.form['item_name'],
             'Price': request.form['price'],
@@ -258,7 +258,8 @@ def edit_menu_item(item_id):
                 image_file.save(image_path)
                 data['Image'] = image_filename  # Update image path in the database if a new image is uploaded
 
-        # Update query
+
+         # Update query
         query = """
         UPDATE Menu 
         SET Item_name = :Item_name, Price = :Price, Description = :Description, Image = :Image
@@ -268,11 +269,31 @@ def edit_menu_item(item_id):
         execute_query(query, data)
         return redirect(url_for('menu_management'))
 
+
     # Fetch menu item details for editing
     query = "SELECT ID, Item_name, Price, Description, Image FROM Menu WHERE ID = ?"
     menu_item = execute_query(query, (item_id,), fetch_one=True)
 
     return render_template('edit_menu_item.html', menu_item=menu_item)
+
+@app.route('/delete_menu_item/<int:item_id>', methods=['POST'])
+def delete_menu_item(item_id):
+    # Fetch the menu item before deletion to handle image file removal
+    query = "SELECT Image FROM Menu WHERE ID = ?"
+    current_image = execute_query(query, (item_id,), fetch_one=True)
+    current_image = current_image[0] if current_image else None
+    
+    if current_image:
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], current_image)
+        if os.path.exists(image_path):
+            os.remove(image_path)  # Remove the image file if it exists
+
+    # Delete the menu item from the database
+    query = "DELETE FROM Menu WHERE ID = ?"
+    execute_query(query, (item_id,))
+    
+    # Return a JSON response indicating success
+    return jsonify({'status': 'success', 'message': 'Menu item has been deleted.'})
 
 @app.route('/add_menu_item', methods=['GET', 'POST'])
 def add_menu_item():
