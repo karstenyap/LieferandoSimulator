@@ -54,7 +54,6 @@ CREATE TABLE "Cart" (
 	"Restaurant_id"	INTEGER NOT NULL,
 	"Menu_Item_id"	INTEGER NOT NULL,
 	"Quantity"	INTEGER NOT NULL,
-	"Remark"	TEXT,
 	UNIQUE("Customer_id","Menu_Item_id"),
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
@@ -62,7 +61,7 @@ CREATE TABLE "Cart" (
 CREATE TABLE "Orders" (
 	"Orders_id"	INTEGER,
 	"Customer_id"	INTEGER NOT NULL,
-	"Restaurant_id"	INTEGER NOT NULL,
+	"Restaurant_id"	INTEGER,
 	"Total_Amount"	INTEGER NOT NULL,
 	"Order_Status"	TEXT DEFAULT 'Pending' CHECK("Order_Status" IN ('Pending', 'Completed', 'Cancelled')),
 	"Remark"	TEXT,
@@ -70,4 +69,14 @@ CREATE TABLE "Orders" (
 	PRIMARY KEY("Orders_id" AUTOINCREMENT),
 	FOREIGN KEY("Customer_id") REFERENCES "Customer"("ID"),
 	FOREIGN KEY("Restaurant_id") REFERENCES "Restaurant"("ID")
+);
+
+CREATE TABLE "Order_Items" (
+	"Order_Item_id"	INTEGER,
+	"Order_id"	INTEGER NOT NULL,
+	"Menu_Item_id"	INTEGER NOT NULL,
+	"Quantity"	INTEGER NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("Menu_Item_id") REFERENCES "Menu"("ID"),
+	FOREIGN KEY("Order_id") REFERENCES "Orders"("Orders_id")
 );
