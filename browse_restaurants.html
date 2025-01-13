@@ -14,10 +14,14 @@
         </div>
         <nav>
             <ul>
-                <li><a href="{{ url_for('customer_dashboard') }}">Dashboard</a></li>
-                <li><a href="{{ url_for('browse_restaurants') }}">Browse</a></li>
+                <li><a href="{{ url_for('view_orders') }}">Track Orders</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
             </ul>
         </nav>
+
+        <div class="credit-balance">
+            <p>Your Credit Balance: €{{ credit_balance }}</p>
+        </div>
     </header>
 
     <main>
