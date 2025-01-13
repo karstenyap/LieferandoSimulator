@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='orders_styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>My Orders</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('browse_restaurants') }}">Browse</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% if orders %}
+        <div class="orders-container">
+            {% for order in orders %}
+            <div class="order-card">
+                {% if order[2] %} <!-- Check if image exists -->
+                <img src="{{ url_for('static', filename='uploads/' + order[2]) }}" alt="Restaurant Logo">
+                {% endif %}
+                <div>
+                    <h2>{{ order[1] }}</h2>
+                    <p>Order ID: {{ order[0] }}</p>
+                    <p>Total Amount: €{{ order[3] }}</p>
+                    <p>Status: {{ order[4] }}</p>
+                    <p>Order Date: {{ order[5] }}</p>
+                    <p>Remark: {{ order[6] }}</p>
+                </div>
+                <!-- Item List -->
+                <div class="item-list">
+                    <ul>
+                        {% for item in items %}
+                        <li>{{ item[0] }} (x{{ item[2] }}): €{{ '%.2f' | format(item[1]) }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>You have no orders yet.</p>
+        {% endif %}
+    </main>
+</body>
+</html>
