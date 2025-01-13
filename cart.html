@@ -10,7 +10,6 @@
     <header>
         <h1>Your Cart</h1>
         <nav>
-            <a href="/customer-dashboard">Dashboard</a>
             <a href="/browse-restaurants">Browse Restaurants</a>
         </nav>
     </header>
@@ -29,7 +28,7 @@
                         
                         <!-- Remove Button -->
                         <form method="POST" action="{{ url_for('remove_from_cart') }}">
-                            <input type="hidden" name="menu_item_id" value="{{ item['menu_item_id'] }}">
+                            <input type="hidden" name="menu_item_id" value="{{ item.menu_item_id }}">
                             <button type="submit">Remove</button>
                         </form>                        
                     </li>
@@ -40,15 +39,6 @@
             {% endif %}
         </section>
 
-        <!-- Remark Section -->
-        <section class="remarks">
-            <h3>Remarks</h3>
-            <form action="{{ url_for('view_cart') }}" method="POST">
-                <textarea name="remark" rows="4" placeholder="Add a remark..."></textarea>
-                <button type="submit">Save Remark</button>
-            </form>
-        </section>
-
         <!-- Fees Summary -->
         <section class="fees-summary">
             <h3>Order Summary</h3>
@@ -57,9 +47,11 @@
             <p><strong>Total Fee:</strong> €{{ total_fee }}</p>
         </section>
 
-        <!-- Checkout Button -->
+        <!-- Checkout Section -->
         <section class="checkout">
+            <h3>Remarks</h3>
             <form action="{{ url_for('checkout') }}" method="POST">
+                <textarea name="remark" rows="4" placeholder="Add a remark..."></textarea>
                 <button type="submit">Checkout</button>
             </form>
         </section>
