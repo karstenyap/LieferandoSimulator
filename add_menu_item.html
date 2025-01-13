@@ -10,8 +10,15 @@
 <body>
     <div class="action-buttons-container">
         <button class="sign-out-btn" onclick="window.location.href='/logout'">Sign Out</button>
-        <a href="{{ url_for('menu_management') }}" class="menu-management-link">Menu Management</a>
     </div>
+
+    <button class="back-button" onclick="history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </button>
+    
     
     <div class="container">
         <header>
@@ -26,35 +33,33 @@
             <div id="menu-items-container">
                 <!-- Menu Item Template -->
                 <div class="menu-item" id="menu-item-0">
-                   <div class="image-container">
-                      <div class="item-picture-container">
-                         <p id="upload-text-0" class="upload-placeholder">Click to Upload</p>
-                         <img id="image-preview-0" src="#" alt="Item Image" style="display: none;" />
-                         <input 
-                            type="file" 
-                            id="image_0" 
-                            name="image[]" 
-                            accept="image/*" 
-                            onchange="previewImage(this, 'image-preview-0', 'upload-text-0')" 
-                            required />
-                      </div>
-                  </div>
-            
-
-                    <!-- Item Details Section -->
+                    <div class="image-container">
+                        <div class="item-picture-container">
+                            <p id="upload-text-0" class="upload-placeholder">Click to Upload</p>
+                            <img id="image-preview-0" src="#" alt="Item Image" style="display: none;" />
+                            <input 
+                                type="file" 
+                                id="image_0" 
+                                name="image[]" 
+                                accept="image/*" 
+                                onchange="previewImage(this, 'image-preview-0')" 
+                                required />
+                        </div>
+                    </div>
+                
                     <div class="menu-item-details">
                         <div class="form-group">
                             <label for="item_name_0">Item Name</label>
                             <input type="text" id="item_name_0" name="item_name[]" placeholder="Enter item name" required maxlength="50">
                             <small class="input-instruction">Max 50 characters</small>
                         </div>
-
+                
                         <div class="form-group">
                             <label for="price_0">Price</label>
                             <input type="number" id="price_0" name="price[]" placeholder="Enter price" required step="0.01">
                             <small class="input-instruction">Enter a valid price</small>
                         </div>
-
+                
                         <div class="form-group">
                             <label for="description_0">Description</label>
                             <textarea id="description_0" name="description[]" placeholder="Enter item description" required maxlength="100"></textarea>
@@ -62,7 +67,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+                
 
             <!-- Buttons -->
             <div class="button-container">
