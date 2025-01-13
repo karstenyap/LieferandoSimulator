@@ -178,26 +178,153 @@ def customer_register():
 def signin():
     return render_template('signin.html')
 
+# Route for Restaurant Sign In
 @app.route('/restaurant-signin', methods=['GET', 'POST'])
 def restaurant_signin():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
 
-        query = "SELECT * FROM Restaurant WHERE Email = ? AND Password = ?"
-        with sqlite3.connect(DATABASE) as conn:
-            cursor = conn.cursor()
-            cursor.execute(query, (email, password))
-            restaurant = cursor.fetchone()
+        # Query the Restaurant table
+        query = "SELECT ID, Name FROM Restaurant WHERE Email = ? AND Password = ?"
+        restaurant = execute_query(query, (email, password), fetch_one=True)
 
         if restaurant:
-            # Login successful
-            return redirect(url_for('success'))  # Redirect to a dashboard or success page
+            session['restaurant_id'] = restaurant[0]  # Store the restaurant ID in session
+            session['restaurant_name'] = restaurant[1]  # Store the restaurant name in session
+            return redirect(url_for('menu_or_order', Restaurant_id=restaurant[0]))
         else:
-            # Login failed
-            return "Invalid email or password", 401
+            return render_template('restaurant_signin.html', error="Invalid email or password")
 
     return render_template('restaurant_signin.html')
+
+@app.route('/menu_or_order')
+def menu_or_order():
+    restaurant_id = request.args.get('Restaurant_id') or session.get('restaurant_id')
+
+    if not restaurant_id:
+        return redirect(url_for('restaurant_signin'))
+
+    query = "SELECT Name FROM Restaurant WHERE ID = ?"
+    restaurant = execute_query(query, (restaurant_id,), fetch_one=True)
+
+    if not restaurant:
+        return "Restaurant not found", 404
+
+    restaurant_name = restaurant[0]  # Accessing the first column of the tuple
+    return render_template('menu_or_order.html', Restaurant_id=restaurant_id, Restaurant_name=restaurant_name)
+
+
+
+@app.route('/menu_management', methods=['GET', 'POST'])
+def menu_management():
+    restaurant_id = request.args.get('Restaurant_id') or session.get('restaurant_id')
+
+    if not restaurant_id:
+        return redirect(url_for('restaurant_signin'))
+
+    # Fetch existing menu items for the restaurant
+    query = "SELECT ID, Item_name, Price, Description, Image FROM Menu WHERE Restaurant_id = ?"
+    menu_items = execute_query(query, (restaurant_id,), fetch_all=True)
+
+    return render_template('menu_management.html', menu_items=menu_items, Restaurant_id=restaurant_id)
+
+@app.route('/edit_menu_item/<int:item_id>', methods=['GET', 'POST'])
+def edit_menu_item(item_id):
+    if request.method == 'POST':
+        # Fetch existing image before the update
+        query = "SELECT Image FROM Menu WHERE ID = ?"
+        current_image = execute_query(query, (item_id,), fetch_one=True)
+        current_image = current_image[0] if current_image else None
+        
+         # Prepare data to update
+        data = {
+            'Item_name': request.form['item_name'],
+            'Price': request.form['price'],
+            'Description': request.form['description'],
+            'Image': current_image  # Default to the current image if no new image is uploaded
+        }
+
+        # Handle image upload if a new image is provided
+        if 'image' in request.files:
+            image_file = request.files['image']
+            if image_file and allowed_file(image_file.filename):
+                image_filename = secure_filename(image_file.filename)
+                image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                image_file.save(image_path)
+                data['Image'] = image_filename  # Update image path in the database if a new image is uploaded
+
+
+         # Update query
+        query = """
+        UPDATE Menu 
+        SET Item_name = :Item_name, Price = :Price, Description = :Description, Image = :Image
+        WHERE ID = :item_id
+        """
+        data['item_id'] = item_id
+        execute_query(query, data)
+        return redirect(url_for('menu_management'))
+
+
+    # Fetch menu item details for editing
+    query = "SELECT ID, Item_name, Price, Description, Image FROM Menu WHERE ID = ?"
+    menu_item = execute_query(query, (item_id,), fetch_one=True)
+
+    return render_template('edit_menu_item.html', menu_item=menu_item)
+
+@app.route('/delete_menu_item/<int:item_id>', methods=['POST'])
+def delete_menu_item(item_id):
+    # Fetch the menu item before deletion to handle image file removal
+    query = "SELECT Image FROM Menu WHERE ID = ?"
+    current_image = execute_query(query, (item_id,), fetch_one=True)
+    current_image = current_image[0] if current_image else None
+    
+    if current_image:
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], current_image)
+        if os.path.exists(image_path):
+            os.remove(image_path)  # Remove the image file if it exists
+
+    # Delete the menu item from the database
+    query = "DELETE FROM Menu WHERE ID = ?"
+    execute_query(query, (item_id,))
+    
+    # Return a JSON response indicating success
+    return jsonify({'status': 'success', 'message': 'Menu item has been deleted.'})
+
+@app.route('/add_menu_item', methods=['GET', 'POST'])
+def add_menu_item():
+    restaurant_id = session.get('restaurant_id')
+    if not restaurant_id:
+        return redirect(url_for('restaurant_signin'))
+
+    if request.method == 'POST':
+        # Add new menu item
+        data = {
+            'Restaurant_id': restaurant_id,
+            'Item_name': request.form['item_name'],
+            'Price': request.form['price'],
+            'Description': request.form['description'],
+            'Image': None
+        }
+
+        # Handle image upload
+        if 'image' in request.files:
+            image_file = request.files['image']
+            if image_file and allowed_file(image_file.filename):
+                filename = secure_filename(image_file.filename)
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                image_file.save(filepath)
+                data['Image'] = f'uploads/{filename}'  # Save the relative path
+
+        # Insert into database
+        query = """
+        INSERT INTO Menu (Restaurant_id, Item_name, Price, Description, Image)
+        VALUES (:Restaurant_id, :Item_name, :Price, :Description, :Image)
+        """
+        execute_query(query, data)
+        return redirect(url_for('menu_management'))  # Ensure the user sees the updated menu
+
+    return render_template('add_menu_item.html', Restaurant_id=session.get('restaurant_id'))
 
 @app.route('/customer-signin', methods=['GET', 'POST'])
 def customer_signin():
@@ -370,7 +497,8 @@ def view_cart():
 
     # Calculate subtotal
     subtotal = sum(item[1] * item[2] for item in cart_items)
-    total_fee = subtotal + delivery_fee
+    subtotal = round(subtotal, 2)
+    total_fee = round(subtotal + delivery_fee, 2)
 
     formatted_cart = [
         {"item_name": item[0], "price": item[1], "quantity": item[2], "menu_item_id": item[3], "total": item[1] * item[2]}
@@ -430,7 +558,7 @@ def checkout():
     else:
         delivery_fee = 7.00
 
-    # Calculate the total amount
+    # Calculate the subtotal
     query_subtotal = """
     SELECT SUM(Menu.Price * Cart.Quantity)
     FROM Cart
@@ -438,22 +566,22 @@ def checkout():
     WHERE Cart.Customer_id = ?
     """
     subtotal = execute_query(query_subtotal, (user_id,), fetch_one=True)[0] or 0
-    total_amount = subtotal + delivery_fee
+    subtotal = round(subtotal, 2)
+    
+    total_amount = round(subtotal + delivery_fee, 2)
 
-    # Fetch the customer's current balance
-    query_balance = "SELECT balance FROM Customer WHERE ID = ?"
-    balance = execute_query(query_balance, (user_id,), fetch_one=True)[0]
+    # Fetch balance and verify funds
+    balance_query = "SELECT balance FROM Customer WHERE ID = ?"
+    balance = execute_query(balance_query, (user_id,), fetch_one=True)[0]
 
     if balance < total_amount:
-        # Insufficient balance
         return jsonify({"error": f"Insufficient funds. Your balance is €{balance:.2f}, but your total is €{total_amount:.2f}."}), 400
 
-    # Deduct total_amount from the customer's balance
+    # Deduct amount from balance
     new_balance = balance - total_amount
     update_balance_query = "UPDATE Customer SET balance = ? WHERE ID = ?"
     execute_query(update_balance_query, (new_balance, user_id))
 
-    # Determine the Restaurant_id
     query_restaurant_id = """
     SELECT Menu.Restaurant_id
     FROM Cart
@@ -463,18 +591,34 @@ def checkout():
     """
     restaurant_id = execute_query(query_restaurant_id, (user_id,), fetch_one=True)[0]
 
-    # Insert a new order into the Orders table with the remark
+    # Insert a new order into the Orders table
     query_insert_order = """
     INSERT INTO Orders (Customer_id, Restaurant_id, Total_Amount, Remark, Order_Status)
-    VALUES (?, ?, ?, ?, 'Pending')
+    VALUES (?, ?, ?, ?,'Pending')
     """
-    execute_query(query_insert_order, (user_id, restaurant_id, total_amount, remark))
+    connection = sqlite3.connect("Main.db")
+    cursor = connection.cursor()
+    cursor.execute(query_insert_order, (user_id, restaurant_id, total_amount, remark))
+    order_id = cursor.lastrowid  # Retrieve the last inserted Orders_id
 
-    # Clear the cart for the current user
-    query_clear_cart = "DELETE FROM Cart WHERE Customer_id = ?"
-    execute_query(query_clear_cart, (user_id,))
+    # Insert items into the Order_Items table
+    query_insert_order_item = """
+    INSERT INTO Order_Items (Order_id, Menu_Item_id, Quantity)
+    VALUES (?, ?, ?)
+    """
+    for item in cart_items:
+        menu_item_id, quantity = item
+        cursor.execute(query_insert_order_item, (order_id, menu_item_id, quantity))
 
-    return redirect(url_for('view_orders', success='true'))
+    # Commit the transaction and close the connection
+    connection.commit()
+    connection.close()
+
+    # Clear the cart
+    clear_cart_query = "DELETE FROM Cart WHERE Customer_id = ?"
+    execute_query(clear_cart_query, (user_id,))
+
+    return redirect(url_for('view_orders'))
 
 @app.route('/remove-from-cart', methods=['POST'])
 def remove_from_cart():
@@ -503,7 +647,7 @@ def remove_from_cart():
     delete_query = "DELETE FROM Cart WHERE Customer_id = ? AND Menu_Item_id = ?"
     execute_query(delete_query, (user_id, menu_item_id))
 
-    return render_template('cart.html')
+    return redirect(url_for('view_cart'))
 
 @app.route('/view-orders')
 def view_orders():
@@ -513,14 +657,28 @@ def view_orders():
         return jsonify({"error": "Customer not logged in"}), 401
 
     query = """
-    SELECT Orders.Orders_id, Restaurant.Name, Orders.Total_Amount, Orders.Order_Status, Orders.Order_Date
+    SELECT Orders.Orders_id, Restaurant.Name, Restaurant.Image, Orders.Total_Amount, Orders.Order_Status, Orders.Order_Date, Orders.Remark
     FROM Orders
     JOIN Restaurant ON Orders.Restaurant_id = Restaurant.ID 
     WHERE Orders.Customer_id = ?
     """
-
     orders = execute_query(query, (user_id,), fetch_all=True)
-    return render_template('orders.html', orders=orders)
+
+    # Prepare the data to include items for each order
+    orders_with_items = []
+    for order in orders:
+        order_id, total_amount, order_status, order_date, remark, restaurant_name, restaurant_logo = order
+
+        # Query to fetch items for each order
+        query_items = """
+        SELECT Menu.Item_name, Menu.Price, Order_Items.Quantity
+        FROM Order_Items
+        JOIN Menu ON Order_Items.Menu_Item_id = Menu.ID
+        WHERE Order_Items.Order_id = ?
+        """
+        items = execute_query(query_items, (order_id,), fetch_all=True)
+        
+    return render_template('orders.html', orders=orders, items=items)
 
 @app.route('/logout')
 def logout():
