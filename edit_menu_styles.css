@@ -242,17 +242,138 @@ button:hover {
     box-sizing: border-box;
 }
 
+/* Responsive Design */
 
-
-/* Ensure proper layout for small screens */
+/* For screens with width up to 768px */
 @media (max-width: 768px) {
-    .button-container {
-        margin-top: 10px; /* Adjust spacing for mobile view */
-    }
-    .container {
-        padding: 15px;
-    }
     .menu-item {
-        flex-direction: column;
+        flex-direction: column; /* Stack items vertically on small screens */
+        align-items: center;    /* Center items */
+    }
+
+    .item-picture-container {
+        width: 120px; /* Adjust image size */
+        height: 120px;
+    }
+
+    h1 {
+        font-size: 2rem; /* Adjust heading size */
+    }
+
+    .action-buttons-container {
+        top: 10px;
+        right: 10px;
+        gap: 8px; /* Reduce spacing between buttons */
+    }
+
+    button {
+        width: 180px; /* Adjust button size */
+    }
+
+    .back-button {
+        top: 15px; /* Adjust back button position */
+        left: 15px;
+    }
+}
+
+/* For screens with width up to 480px */
+@media (max-width: 480px) {
+    .menu-item {
+        gap: 15px; /* Reduce gap between menu items */
+    }
+
+    .item-picture-container {
+        width: 100px; /* Further reduce image size */
+        height: 100px;
+    }
+
+    h1 {
+        font-size: 1.5rem; /* Smaller heading size */
+    }
+
+    .action-buttons-container {
+        top: 5px;
+        right: 5px;
+        gap: 5px; /* Reduce spacing between buttons */
+    }
+
+    button {
+        width: 150px; /* Smaller buttons */
+    }
+
+    .back-button {
+        top: 10px;
+        left: 10px;
+    }
+}
+
+/* For screens between 768px and 480px */
+@media screen and (max-width: 767px) and (min-width: 481px) {
+
+    /* General Body Styles */
+    body {
+        padding-top: 40px; /* Adjust top padding */
+    }
+
+    /* Action Buttons Container */
+    .action-buttons-container {
+        top: 10px; /* Reduce space from top */
+        right: 10px; /* Keep right-aligned */
+        gap: 8px; /* Slightly smaller gap */
+        padding: 8px; /* Reduced padding */
+    }
+
+    /* Menu Item Details */
+    .menu-item-details {
+        flex: 1;
+        text-align: left;
+        gap: 15px; /* Slightly smaller gap */
+    }
+
+    /* Menu Item Image */
+    .item-picture-container {
+        width: 120px; /* Smaller image size */
+        height: 120px;
+    }
+
+    .item-picture-container img {
+        object-fit: cover;
+    }
+
+    /* Inputs and Textarea */
+    input, textarea {
+        padding: 12px; /* Slightly smaller padding */
+        font-size: 14px; /* Smaller font size */
+    }
+
+    /* Buttons */
+    .button-container {
+        gap: 12px; /* Slightly smaller button gap */
+    }
+
+    button {
+        width: 180px; /* Smaller button width */
+        font-size: 0.9rem; /* Smaller text size */
+    }
+
+    /* Notification */
+    .notification {
+        width: calc(100% - 30px); /* Adjust width */
+        max-width: 550px; /* Make it smaller */
+    }
+
+    /* Form Container */
+    .container {
+        padding: 15px; /* Less padding */
+    }
+
+    h1 {
+        font-size: 2rem; /* Smaller heading font */
+    }
+
+    /* Back Button */
+    .back-button {
+        font-size: 14px; /* Smaller text size */
+        padding: 3px 5px; /* Less padding */
     }
 }
