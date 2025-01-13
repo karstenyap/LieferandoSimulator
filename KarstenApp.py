@@ -214,8 +214,6 @@ def menu_or_order():
     restaurant_name = restaurant[0]  # Accessing the first column of the tuple
     return render_template('menu_or_order.html', Restaurant_id=restaurant_id, Restaurant_name=restaurant_name)
 
-
-
 @app.route('/menu_management', methods=['GET', 'POST'])
 def menu_management():
     restaurant_id = request.args.get('Restaurant_id') or session.get('restaurant_id')
@@ -254,7 +252,6 @@ def edit_menu_item(item_id):
                 image_file.save(image_path)
                 data['Image'] = image_filename  # Update image path in the database if a new image is uploaded
 
-
          # Update query
         query = """
         UPDATE Menu 
@@ -264,7 +261,6 @@ def edit_menu_item(item_id):
         data['item_id'] = item_id
         execute_query(query, data)
         return redirect(url_for('menu_management'))
-
 
     # Fetch menu item details for editing
     query = "SELECT ID, Item_name, Price, Description, Image FROM Menu WHERE ID = ?"
@@ -311,11 +307,10 @@ def add_menu_item():
         if 'image' in request.files:
             image_file = request.files['image']
             if image_file and allowed_file(image_file.filename):
-                filename = secure_filename(image_file.filename)
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                image_file.save(filepath)
-                data['Image'] = f'uploads/{filename}'  # Save the relative path
-
+                image_filename = secure_filename(image_file.filename)
+                image_filepath = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
+                image_file.save(image_filepath)
+                data['Image'] = image_filename
         # Insert into database
         query = """
         INSERT INTO Menu (Restaurant_id, Item_name, Price, Description, Image)
@@ -325,6 +320,7 @@ def add_menu_item():
         return redirect(url_for('menu_management'))  # Ensure the user sees the updated menu
 
     return render_template('add_menu_item.html', Restaurant_id=session.get('restaurant_id'))
+
 
 @app.route('/customer-signin', methods=['GET', 'POST'])
 def customer_signin():
@@ -656,20 +652,23 @@ def view_orders():
     if not user_id:
         return jsonify({"error": "Customer not logged in"}), 401
 
-    query = """
+    # Fetch orders for the current user
+    query_orders = """
     SELECT Orders.Orders_id, Restaurant.Name, Restaurant.Image, Orders.Total_Amount, Orders.Order_Status, Orders.Order_Date, Orders.Remark
     FROM Orders
     JOIN Restaurant ON Orders.Restaurant_id = Restaurant.ID 
     WHERE Orders.Customer_id = ?
     """
-    orders = execute_query(query, (user_id,), fetch_all=True)
+    orders = execute_query(query_orders, (user_id,), fetch_all=True)
 
-    # Prepare the data to include items for each order
+    # Dictionary to hold order data with items as a separate dimension
     orders_with_items = []
-    for order in orders:
-        order_id, total_amount, order_status, order_date, remark, restaurant_name, restaurant_logo = order
 
-        # Query to fetch items for each order
+    # Loop through orders and attach items
+    for order in orders:
+        order_id = order[0]
+
+        # Query to fetch items for the current order
         query_items = """
         SELECT Menu.Item_name, Menu.Price, Order_Items.Quantity
         FROM Order_Items
@@ -677,8 +676,23 @@ def view_orders():
         WHERE Order_Items.Order_id = ?
         """
         items = execute_query(query_items, (order_id,), fetch_all=True)
-        
-    return render_template('orders.html', orders=orders, items=items)
+
+        # Prepare the order dictionary with an additional dimension for items
+        order_data = {
+            "Orders_id": order[0],
+            "Restaurant": {
+                "Name": order[1],
+                "Image": order[2],
+            },
+            "Total_Amount": order[3],
+            "Order_Status": order[4],
+            "Order_Date": order[5],
+            "Remark": order[6],
+            "Items": [{"Item_name": item[0], "Price": item[1], "Quantity": item[2]} for item in items]
+        }
+        orders_with_items.append(order_data)
+
+    return render_template('orders.html', orders=orders_with_items)
 
 @app.route('/logout')
 def logout():
