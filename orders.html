@@ -21,24 +21,27 @@
         <div class="orders-container">
             {% for order in orders %}
             <div class="order-card">
-                {% if order[2] %} <!-- Check if image exists -->
-                <img src="{{ url_for('static', filename='uploads/' + order[2]) }}" alt="Restaurant Logo">
+                {% if order.Restaurant.Image %}
+                <img src="{{ url_for('static', filename='uploads/' + order.Restaurant.Image) }}" alt="Restaurant Logo">
                 {% endif %}
                 <div>
-                    <h2>{{ order[1] }}</h2>
-                    <p>Order ID: {{ order[0] }}</p>
-                    <p>Total Amount: €{{ order[3] }}</p>
-                    <p>Status: {{ order[4] }}</p>
-                    <p>Order Date: {{ order[5] }}</p>
-                    <p>Remark: {{ order[6] }}</p>
-                </div>
-                <!-- Item List -->
-                <div class="item-list">
-                    <ul>
-                        {% for item in items %}
-                        <li>{{ item[0] }} (x{{ item[2] }}): €{{ '%.2f' | format(item[1]) }}</li>
-                        {% endfor %}
-                    </ul>
+                    <h2>{{ order.Restaurant.Name }}</h2>
+                    <p>Order ID: {{ order.Orders_id }}</p>
+                    <p>Order Date: {{ order.Order_Date }}</p>
+                    <div class="item-list">
+                        <ul>
+                            {% for item in order.Items %}
+                            <li>{{ item.Item_name }}  <span>€{{ '%.2f' | format(item.Price) }} x{{ item.Quantity }}</span></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="remark-container">
+                        <p class="remark">Remark: {{ order.Remark }}</p>
+                    </div>
+                    <div class="price-status">
+                        <p class="total">Total: €{{ order.Total_Amount }}</p>
+                        <p class="status {{ order.Order_Status|lower }}">{{ order.Order_Status }}</p>
+                    </div>
                 </div>
             </div>
             {% endfor %}
