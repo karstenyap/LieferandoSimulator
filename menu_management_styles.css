@@ -86,6 +86,30 @@ header h1 {
     background: linear-gradient(145deg, #f4dff0, #ffebff); /* Slightly brighter pastel gradient */
 }
 
+button {
+    width: 200px;
+    background: linear-gradient(145deg, #d6c4e8, #b39ddb);
+    border: none;
+    padding: 10px 20px; /* Compact padding */
+    color: #333;
+    font-family: inherit;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center; /* Center the text */
+    width: fit-content; /* Shrinks the button to fit the text */
+    height: auto;       /* Ensures it doesn’t stretch vertically */
+    display: inline-block; /* Avoids block-level stretching */
+    line-height: 1;     /* Matches the text height to avoid vertical gaps */
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px hsl(0, 0%, 96%);
+}
+
 .back-button {
     position: fixed; /* Sticks to the top-left corner regardless of scrolling */
     top: 10px;       /* Distance from the top of the screen */
@@ -114,23 +138,30 @@ header h1 {
 /* Menu Items Container */
 #menu-items-container {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 100%;
-    max-width: 900px; /* Adjust the max width for better container sizing */
-    margin: 0 auto; /* Center the content */
+    flex-direction: column; /* Stack the cards vertically */
+    gap: 20px; /* Add a gap between the cards */
+    width: 100%; /* Full width of the screen */
+    max-width: 800px; /* Limit the maximum width for better design */
+    margin: 0 auto; /* Center the list horizontally */
+    padding: 20px; /* Add some padding around the container */
+    box-sizing: border-box;
 }
+    
 
 /* Menu Item */
 .menu-item {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: center; /* Align items in the card vertically */
+    gap: 20px; /* Add space between the image and the details */
     background-color: rgb(247, 219, 223);
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px; /* Restrict the width of each card */
+    margin: 0 auto; /* Center the card horizontally */
+    box-sizing: border-box;
 }
 
 /* Image Section */
@@ -206,6 +237,90 @@ header h1 {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
+
+/* Media Query for Phones (Under 480px) */
+@media (max-width: 480px) {
+    /* Adjust Page Title Size */
+    .page-title {
+        font-size: 28px; /* Smaller title font size */
+        margin-bottom: 20px; /* Less margin below title */
+    }
+
+    /* Adjust Container Width */
+    .content {
+        padding: 10px; /* Less padding to save space */
+        width: 100%; /* Full width for mobile */
+    }
+
+    /* Cards Adjustment */
+    .menu-card, .order-card {
+        width: 90%; /* Cards take almost the full width */
+        padding: 15px; /* Reduced padding for space */
+    }
+
+    /* Adjust Buttons for Phone */
+    button {
+        font-size: 0.9rem; /* Smaller button font */
+        padding: 10px 20px; /* Less padding */
+    }
+
+    /* Centering the "OR" Text */
+    .or {
+        font-size: 24px; /* Smaller font for "or" */
+        padding: 0 15px; /* Less padding around the text */
+    }
+
+    /* Adjust Section Titles */
+    .section-title {
+        font-size: 24px; /* Smaller section titles */
+    }
+
+    /* Adjusting Sign-Out Button */
+    .sign-out-btn {
+        font-size: 16px; /* Smaller font size for sign-out button */
+        padding: 8px 16px; /* Smaller padding */
+        top: 10px; /* Adjust position for better fit */
+    }
+}
+
+/* Media Query for Medium Devices (480px to 768px) */
+@media (min-width: 480px) and (max-width: 768px) {
+    /* Adjust Page Title Size */
+    .page-title {
+        font-size: 48px; /* Slightly larger title font */
+        margin-bottom: 30px; /* Moderate space below title */
+    }
+
+    /* Adjust Cards Layout */
+    .menu-card, .order-card {
+        width: 80%; /* Wider cards compared to mobile */
+        padding: 20px; /* Moderate padding */
+    }
+
+    /* Button Size Adjustment */
+    button {
+        font-size: 0.95rem; /* Slightly larger button font */
+        padding: 12px 22px; /* More padding */
+    }
+
+    /* Adjust "OR" Text */
+    .or {
+        font-size: 28px; /* Larger font for "or" */
+        padding: 0 18px; /* Moderate padding around the text */
+    }
+
+    /* Section Title Adjustment */
+    .section-title {
+        font-size: 28px; /* Slightly larger section titles */
+    }
+
+    /* Sign-Out Button */
+    .sign-out-btn {
+        font-size: 18px; /* Larger font size */
+        padding: 10px 18px; /* Moderate padding */
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .menu-item {
@@ -220,5 +335,75 @@ header h1 {
     .menu-item-actions {
         text-align: left;
         margin-top: 10px;
+    }
+
+    .add-item-link, .sign-out-btn {
+        font-size: 16px; /* Smaller font size */
+        padding: 10px 20px; /* Smaller padding for smaller screens */
+    }
+}
+
+@media (max-width: 600px) {
+    .menu-item {
+        padding: 12px;
+    }
+
+    .menu-item-image img {
+        width: 80px;
+        height: 80px; /* Adjust image size */
+    }
+
+    .menu-item-name {
+        font-size: 20px;
+    }
+
+    .menu-item-price {
+        font-size: 14px;
+    }
+
+    .menu-item-description {
+        font-size: 14px;
+    }
+
+    .add-item-link, .sign-out-btn {
+        font-size: 14px; /* Adjust button font size for smaller screens */
+        padding: 8px 16px; /* Adjust padding for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-top: 20px; /* Less top padding */
+    }
+
+    .menu-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px; /* Adjust padding */
+    }
+
+    .menu-item-image {
+        margin-bottom: 8px;
+    }
+
+    .add-item-link, .sign-out-btn {
+        font-size: 14px; /* Smaller font size for smaller screens */
+        padding: 8px 14px; /* More compact button */
+    }
+
+    .back-button {
+        padding: 6px 10px; /* Smaller back button */
+    }
+
+    .menu-item-name {
+        font-size: 18px; /* Adjust name font size */
+    }
+
+    .menu-item-price {
+        font-size: 14px; /* Adjust price font size */
+    }
+
+    .menu-item-description {
+        font-size: 12px; /* Adjust description font size */
     }
 }
