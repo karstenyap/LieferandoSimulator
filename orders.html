@@ -39,7 +39,7 @@
                         <p class="remark">Remark: {{ order.Remark }}</p>
                     </div>
                     <div class="price-status">
-                        <p class="total">Total: €{{ order.Total_Amount }}</p>
+                        <p class="total">Total: €{{ '%.2f' | format(order.Total_Amount) }}</p>
                         <p class="status {{ order.Order_Status|lower }}">{{ order.Order_Status }}</p>
                     </div>
                 </div>
