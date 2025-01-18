@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask_socketio import SocketIO, emit
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Replace with a strong, random key
+socketio = SocketIO(app)
+
 DATABASE = 'Main.db'
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -144,10 +147,6 @@ def menu_creation():
 
     return render_template('menu.html', Restaurant_id=restaurant_id)
 
-@app.route('/success')
-def success():
-    return 'Successful'
-
 @app.route('/customer-register', methods=['GET', 'POST'])
 def customer_register():
     if request.method == 'POST':
@@ -212,9 +211,14 @@ def menu_or_order():
         return "Restaurant not found", 404
 
     restaurant_name = restaurant[0]  # Accessing the first column of the tuple
-    return render_template('menu_or_order.html', Restaurant_id=restaurant_id, Restaurant_name=restaurant_name)
 
-@app.route('/menu_management', methods=['GET', 'POST'])
+     # Query to count pending orders
+    pending_count_query = "SELECT COUNT(*) FROM Orders WHERE Restaurant_id = ? AND Order_Status = 'Pending'"
+    pending_count = execute_query(pending_count_query, (restaurant_id,), fetch_one=True)[0]
+
+    return render_template('menu_or_order.html', Restaurant_id=restaurant_id, Restaurant_name=restaurant_name, pending_count=pending_count)
+
+@app.route('/menu-management', methods=['GET', 'POST'])
 def menu_management():
     restaurant_id = request.args.get('Restaurant_id') or session.get('restaurant_id')
 
@@ -321,6 +325,109 @@ def add_menu_item():
 
     return render_template('add_menu_item.html', Restaurant_id=session.get('restaurant_id'))
 
+# View Orders endpoint
+@app.route('/orders-management')
+def orders_management():
+    restaurant_id = session.get('restaurant_id')  # Assuming session stores the restaurant's ID
+
+    orders_query = """
+    SELECT Orders.Orders_id, Orders.Total_Amount, Orders.Remark, Orders.Order_Date, Orders.Order_Status, Customer.Name, Customer.Street, Customer.House_number, Customer.Postcode, Customer.City
+    FROM Orders
+    JOIN Customer ON Orders.Customer_id = Customer.ID
+    WHERE Orders.Restaurant_id = ?
+    ORDER BY 
+    CASE 
+        WHEN Orders.Order_Status = 'Pending' THEN 1
+        WHEN Orders.Order_Status = 'In Preparation' THEN 2
+        WHEN Orders.Order_Status = 'Completed' THEN 3
+        WHEN Orders.Order_Status = 'Cancelled' THEN 4
+    END, 
+    Orders.Order_Date DESC;
+    """
+    orders = execute_query(orders_query, (restaurant_id,), fetch_all=True)
+
+    orders_with_items = []
+
+    for order in orders:
+        order_id = order[0]
+
+        # Query to fetch items for the current order
+        query_items = """
+        SELECT Menu.Item_name, Order_Items.Quantity
+        FROM Order_Items
+        JOIN Menu ON Order_Items.Menu_Item_id = Menu.ID
+        WHERE Order_Items.Order_id = ?
+        """
+        items = execute_query(query_items, (order_id,), fetch_all=True)
+
+        order_data = {
+            "Orders_id": order[0],
+            "Customer": {
+                "Name": order[5],
+                "Street": order[6],
+                "House_number": order[7],
+                "Postcode": order[8],
+                "City": order[9]
+            },
+            "Total_Amount": order[1],
+            "Remark": order[2],
+            "Order_Date": order[3],
+            "Order_Status": order[4],
+            "Items": [{"Item_name": item[0], "Quantity": item[1]} for item in items]
+        }
+        orders_with_items.append(order_data)
+
+    return render_template('order_management.html', orders=orders_with_items)
+
+@app.route('/update_order_status', methods=['POST'])
+def update_order_status():
+    order_id = request.form.get('order_id')
+    new_status = request.form.get('status')
+
+    update_order_query = """
+    UPDATE Orders SET Order_Status = ? WHERE Orders_id = ?
+    """
+    execute_query(update_order_query, (new_status, order_id,))
+
+    if new_status == "Cancelled":
+        # Refund logic
+        get_order_query = """
+        SELECT Customer_id, Total_Amount, Restaurant_id 
+        FROM Orders 
+        WHERE Orders_id = ?
+        """
+        order = execute_query(get_order_query, (order_id,), fetch_one=True)
+
+        if order:
+            customer_id, total_amount, restaurant_id = order
+
+            # Refund the customer
+            update_balance_query = """
+            UPDATE Customer 
+            SET Balance = Balance + ? 
+            WHERE ID = ?
+            """
+            execute_query(update_balance_query, (total_amount, customer_id))
+
+            # Deduct the profit from the restaurant
+            restaurant_refund = round(total_amount * 0.85, 2)
+            update_restaurant_profits_query = """
+            UPDATE Restaurant 
+            SET Profits = Profits - ? 
+            WHERE ID = ?
+            """
+            execute_query(update_restaurant_profits_query, (restaurant_refund, restaurant_id))
+
+            # Deduct the profit from Lieferspatz
+            lieferspatz_refund = round(total_amount * 0.15, 2)
+            update_lieferspatz_profits_query = """
+            UPDATE Lieferspatz 
+            SET Profits = Profits - ? 
+            WHERE ID = 1
+            """
+            execute_query(update_lieferspatz_profits_query, (lieferspatz_refund,))
+
+    return redirect(url_for('orders_management'))
 
 @app.route('/customer-signin', methods=['GET', 'POST'])
 def customer_signin():
@@ -587,12 +694,32 @@ def checkout():
     """
     restaurant_id = execute_query(query_restaurant_id, (user_id,), fetch_one=True)[0]
 
+    # Calculate profits
+    lieferspatz_profit = round(total_amount * 0.15, 2)  # 15% of total amount
+    restaurant_profit = round(total_amount * 0.85, 2)  # 85% of total amount
+
+    # Update restaurant's profits
+    update_profits_query = """
+    UPDATE Restaurant
+    SET Profits = Profits + ?
+    WHERE ID = ?
+    """
+    execute_query(update_profits_query, (restaurant_profit, restaurant_id))
+
+    # Update Lieferspatz profits
+    update_lieferspatz_query = """
+    UPDATE Lieferspatz
+    SET Profits = Profits + ?
+    WHERE ID = 1
+    """
+    execute_query(update_lieferspatz_query, (lieferspatz_profit,))
+
     # Insert a new order into the Orders table
     query_insert_order = """
     INSERT INTO Orders (Customer_id, Restaurant_id, Total_Amount, Remark, Order_Status)
     VALUES (?, ?, ?, ?,'Pending')
     """
-    connection = sqlite3.connect("Main.db")
+    connection = sqlite3.connect(DATABASE)
     cursor = connection.cursor()
     cursor.execute(query_insert_order, (user_id, restaurant_id, total_amount, remark))
     order_id = cursor.lastrowid  # Retrieve the last inserted Orders_id
@@ -614,7 +741,19 @@ def checkout():
     clear_cart_query = "DELETE FROM Cart WHERE Customer_id = ?"
     execute_query(clear_cart_query, (user_id,))
 
+    # Emit a WebSocket event to notify the restaurant
+    socketio.emit('new_order', {'restaurant_id': restaurant_id, 'order_id': order_id}, namespace='/notifications')
+
     return redirect(url_for('view_orders'))
+
+# WebSocket namespace for notifications
+@socketio.on('connect', namespace='/notifications')
+def handle_connect():
+    print("A client connected to the notifications namespace.")
+
+@socketio.on('disconnect', namespace='/notifications')
+def handle_disconnect():
+    print("A client disconnected from the notifications namespace.")
 
 @app.route('/remove-from-cart', methods=['POST'])
 def remove_from_cart():
@@ -658,6 +797,14 @@ def view_orders():
     FROM Orders
     JOIN Restaurant ON Orders.Restaurant_id = Restaurant.ID 
     WHERE Orders.Customer_id = ?
+    ORDER BY 
+    CASE 
+        WHEN Orders.Order_Status = 'Pending' THEN 1
+        WHEN Orders.Order_Status = 'In Preparation' THEN 2
+        WHEN Orders.Order_Status = 'Completed' THEN 3
+        WHEN Orders.Order_Status = 'Cancelled' THEN 4
+    END, 
+    Orders.Order_Date DESC;
     """
     orders = execute_query(query_orders, (user_id,), fetch_all=True)
 
@@ -697,6 +844,10 @@ def view_orders():
 @app.route('/logout')
 def logout():
     return redirect(url_for('customer_signin'))
+
+@app.route('/restaurant-Logout')
+def restaurant_logout():
+    return redirect(url_for('restaurant_signin'))
 
 if __name__ == '__main__':
     app.run(debug=True)
