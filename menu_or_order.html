@@ -6,39 +6,82 @@
     <title>Restaurant Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='menu_or_order_styles.css') }}">
 </head>
-<body>
+<body data-restaurant-id="{{ Restaurant_id }}"> <!-- Embed Restaurant_id as a data attribute -->
     <!-- Sign Out Button -->
-    <button class="sign-out-btn" onclick="window.location.href='/logout'">Sign Out</button>
+    <button class="sign-out-btn" onclick="window.location.href='/restaurant-Logout'">Sign Out</button>
 
-    <div class="content">
-        <h1 class="page-title">
-            <p>Hi {{ Restaurant_name }}!</p>
-            <p> Good to see you again.</p>
-        </h1> <!-- Page Title -->
-
-        <div class="mangement-options">
-            <!-- Menu Card -->
-            <div class="menu-card">
-                <h2>Menu Management</h2>
-                <p>
-                    Got new menu to offer? You can update and edit your restaurant here!
-                </p>
-                <button onclick="window.location.href='/menu_management?Restaurant_id={{ Restaurant_id }}'">Manage Menu</button>
+    <main>
+        <!-- Alert for new orders -->
+        <div id="alert-container" class="alert-container">
+            {% if pending_count > 0 %}
+            <div class="alert">
+                <p>You have {{ pending_count }} new order{{ 's' if pending_count > 1 else '' }} waiting to be processed!</p>
             </div>
+            {% else %}
+            <div class="alert">
+                <p>No new orders at the moment.</p>
+            </div>
+            {% endif %}
+        </div>
 
-            <span class="or">or</span>
+        <div class="content">
+            <h1 class="page-title">
+                <p>Hi {{ Restaurant_name }}!</p>
+                <p>Good to see you again.</p>
+            </h1> <!-- Page Title -->
 
-            <!-- Order Card -->
-            <div class="order-card">
-                <h2>Order Management</h2>
-                <p>
-                    The customers are excited for what you have to offer! See how many orders that are requested!
-                </p>
-                <button onclick="window.location.href='/view-orders?Restaurant_id={{ Restaurant_id }}'">Order Requests</button>
+            <div class="mangement-options">
+                <!-- Menu Card -->
+                <div class="menu-card">
+                    <h2>Menu Management</h2>
+                    <p>
+                        Got new menu to offer? You can update and edit your restaurant here!
+                    </p>
+                    <button onclick="window.location.href='/menu-management?Restaurant_id={{ Restaurant_id }}'">Manage Menu</button>
+                </div>
+
+                <span class="or">or</span>
+
+                <!-- Order Card -->
+                <div class="order-card">
+                    <h2>Order Management</h2>
+                    <p>
+                        The customers are excited for what you have to offer! See how many orders that are requested!
+                    </p>
+                    <button onclick="window.location.href='/orders-management?Restaurant_id={{ Restaurant_id }}'">Order Requests</button>
+                </div>
             </div>
         </div>
-    </div>
-    
-    
+    </main>
+
+    <!-- Socket.io Script -->
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script>
+        const restaurantId = document.body.getAttribute('data-restaurant-id'); // Retrieve Restaurant ID from the body tag
+
+        let pendingCount = parseInt("{{ pending_count }}", 10); // Initialize pending count as a number
+
+        const socket = io('/notifications');
+
+        socket.on('connect', () => {
+            console.log("Connected to the notifications namespace.");
+        });
+
+        socket.on('new_order', (data) => {
+            // Compare restaurant ID safely
+            if (data.restaurant_id == restaurantId) {
+                pendingCount += 1; // Increment pending count correctly as a number
+                const alertContainer = document.getElementById('alert-container');
+                alertContainer.innerHTML = `<div class="alert">
+                    <p>You have ${pendingCount} new order${pendingCount > 1 ? 's' : ''} waiting to be processed!</p>
+                </div>`;
+            }
+        });
+
+        socket.on('disconnect', () => {
+            console.log("Disconnected from the notifications namespace.");
+        });
+
+    </script>
 </body>
 </html>
