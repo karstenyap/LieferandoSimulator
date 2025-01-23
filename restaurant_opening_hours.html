@@ -13,7 +13,6 @@
         <p class="instructions">Select the opening and closing times for each day of the week. Check "Closed" if your restaurant is not open that day.</p>
         <form id="openingHoursForm" method="POST">
             <input type="hidden" name="Restaurant_id" value="{{ Restaurant_id }}">
-            <!-- Days -->
             {% for day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] %}
             <fieldset class="day-row">
                 <legend>{{ day.capitalize() }}</legend>
@@ -28,12 +27,10 @@
                         <img src="/static/sleeping_duck.gif" alt="Sleeping Duck" class="sleeping-duck">
                     </span>
                 </label>
-                <!-- Inline Error Message -->
                 <p class="error-message" id="{{ day }}_error"></p>
             </fieldset>
             {% endfor %}
-            <!-- Submit Button -->
-            <div class="btn-container">
+            <div class="buttons">
                 <button type="submit">Save Hours</button>
             </div>
         </form>
