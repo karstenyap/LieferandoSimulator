@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, emit
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Replace with a strong, random key
@@ -47,37 +48,42 @@ def register():
 @app.route('/restaurant-register', methods=['GET', 'POST'])
 def restaurant_register():
     if request.method == 'POST':
+        # Save form data
         data = {
-            'Name': request.form['restaurant_name'],
-            'Email': request.form['email'],
-            'Password': request.form['password'],
-            'Phone_number': request.form['phoneNumber'],
-            'Street': request.form['street'],
-            'Building_number': request.form['buildingNumber'],
-            'Postcode': request.form['postcode'],
-            'City': request.form['city'],
+            'Name': request.form.get('restaurant_name'),
+            'Email': request.form.get('email'),
+            'Password': request.form.get('password'),
+            'Phone_number': request.form.get('phoneNumber'),
+            'Street': request.form.get('street'),
+            'Building_number': request.form.get('buildingNumber'),
+            'Postcode': request.form.get('postcode'),
+            'City': request.form.get('city'),
             'Image': None,
-            'Description': request.form['description']
+            'Description': request.form.get('description'),
+            'Delivery_areas': ','.join(request.form.getlist('delivery_areas'))  # Capture delivery areas
         }
 
-        image = request.files['image[]']
+        # Handle image upload
+        image = request.files.get('image')
         if image and allowed_file(image.filename):
             filename = secure_filename(image.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image.save(filepath)
             data['Image'] = filename  # Save the file path to the database
         else:
-            return "Invalid file format", 400
-        
-        query = """
-        INSERT INTO Restaurant (Name, Email, Password, Phone_number, Street, Building_number, Postcode, City, Image, Description)
-        VALUES (:Name, :Email, :Password, :Phone_number, :Street, :Building_number, :Postcode, :City, :Image, :Description)
-        """
+            return "Image upload is required and must be a valid file", 400
 
+        # Insert into database
+        query = """
+        INSERT INTO Restaurant (Name, Email, Password, Phone_number, Street, Building_number, Postcode, City, Image, Description, Delivery_areas)
+        VALUES (:Name, :Email, :Password, :Phone_number, :Street, :Building_number, :Postcode, :City, :Image, :Description, :Delivery_areas)
+        """
         restaurant_id = execute_query(query, data, fetch_lastrowid=True)
         return redirect(url_for('restaurant_opening_hours', Restaurant_id=restaurant_id))
 
-    return render_template('restaurant_register.html')
+    # List of available delivery areas (can be fetched from a database or API)
+    delivery_areas = ["Duisburg", "Düsseldorf", "Essen", "Mülheim"]
+    return render_template('restaurant_register.html', delivery_areas=delivery_areas)
 
 @app.route('/restaurant-opening-hours', methods=['GET', 'POST'])
 def restaurant_opening_hours():
@@ -353,9 +359,8 @@ def orders_management():
 
         # Query to fetch items for the current order
         query_items = """
-        SELECT Menu.Item_name, Order_Items.Quantity
+        SELECT Menu_Item_Name, Price, Quantity
         FROM Order_Items
-        JOIN Menu ON Order_Items.Menu_Item_id = Menu.ID
         WHERE Order_Items.Order_id = ?
         """
         items = execute_query(query_items, (order_id,), fetch_all=True)
@@ -373,7 +378,7 @@ def orders_management():
             "Remark": order[2],
             "Order_Date": order[3],
             "Order_Status": order[4],
-            "Items": [{"Item_name": item[0], "Quantity": item[1]} for item in items]
+            "Items": [{"Item_name": item[0], "Price": item[1], "Quantity": item[2]} for item in items]
         }
         orders_with_items.append(order_data)
 
@@ -447,62 +452,257 @@ def customer_signin():
 
     return render_template('customer_signin.html')
 
-@app.route('/browse-restaurants', methods=['GET', 'POST'])
+# Fetch user's city based on session or user ID
+def get_user_city():
+    if 'user_id' not in session:
+        return None  # or redirect to login page
+
+    query = """
+    SELECT City FROM Customer WHERE ID = :user_id
+    """
+    user_city = execute_query(query, {'user_id': session['user_id']}, fetch_one=True)
+    if user_city:
+        return user_city[0]  # Extract city from tuple
+    return None
+
+# Fetch all restaurants from the database
+def get_restaurants():
+    query = """
+    SELECT ID, Name, Email, Phone_number, Street, Building_number, City, Postcode, Image, Description, Delivery_Areas
+    FROM Restaurant
+    """
+    return execute_query(query, fetch_all=True)
+
+# Fetch opening hours for a given restaurant
+def get_opening_hours(restaurant_id):
+    query = """
+    SELECT day, open_time, close_time, is_closed
+    FROM OpeningHours
+    WHERE Restaurant_id = ?
+    """
+    return execute_query(query, (restaurant_id,), fetch_all=True)
+
+# Fetch today's opening hours
+def get_today_opening_hours(opening_hours, today):
+    today_hours = next(
+        (f"{open_time}-{close_time}" if not is_closed else "-" 
+         for day, open_time, close_time, is_closed in opening_hours if day == today),
+        "-"
+    )
+    return today_hours
+
+# Check if the restaurant can deliver to the user's city
+def can_deliver_to_user(restaurant_city, user_city, restaurant_delivery_areas):
+    if not restaurant_delivery_areas:
+        return False
+    delivery_areas = [area.strip() for area in restaurant_delivery_areas.split(',')]
+    return user_city == restaurant_city or user_city in delivery_areas
+
+# Check restaurant status based on opening hours and current time
+def check_restaurant_status(opening_hours, current_time):
+    """
+    Returns formatted string for today's hours with open/closed status.
+    """
+    if not opening_hours:
+        return "Closed"
+
+    today = datetime.now().strftime('%A')  # Get today's day (e.g., "Sunday")
+
+    for day, open_time, close_time, is_closed in opening_hours:
+        if day == today:
+            if is_closed:
+                return "Closed"  # Explicitly closed for the day
+
+            open_time_obj = datetime.strptime(open_time, "%H:%M").time()
+            close_time_obj = datetime.strptime(close_time, "%H:%M").time()
+
+            if open_time_obj <= current_time <= close_time_obj:
+                return f"{open_time} - {close_time} (Open)"
+            return f"{open_time} - {close_time} (Closed)"
+
+    return "Closed"  # Default to closed if no matching hours
+
+
+# Browse restaurants route
+@app.route('/browse_restaurants', methods=['GET', 'POST'])
 def browse_restaurants():
-    user_id = session.get('user_id') 
+    user_city = get_user_city()
+    if not user_city:
+        return redirect(url_for('signin'))
 
-    if not user_id:
-        return redirect(url_for('browse_restaurants'))
+    # Get the user's current balance
+    user_balance_query = "SELECT Balance FROM Customer WHERE ID = :user_id"
+    user_balance = execute_query(user_balance_query, {'user_id': session['user_id']}, fetch_one=True)
+    credit_balance = user_balance[0] if user_balance else 100
 
-    # Fetch the customer's credit balance
-    credit_query = "SELECT Balance FROM Customer WHERE ID = ?"
-    credit_balance_result = execute_query(credit_query, (user_id,), fetch_one=True)
-
-    # Extract balance and format it to two decimal points
-    credit_balance = f"{credit_balance_result[0]:.2f}" if credit_balance_result else "0.00"
-
+    # Fetch all restaurants
+    restaurants = get_restaurants()
     search_query = request.form.get('search')  # Get search query from the form (if POST request)
+    near_you = []
+    others = []
+    today = datetime.now().strftime('%A')  # Get today's day (e.g., "Monday")
+    current_time = datetime.now().time()  # Get current time as a time object
 
-    if search_query:
-        # Filter restaurants by name if a search query is provided
-        restaurant_query = """
-        SELECT ID, Name, Street, Building_number, Postcode, City, Phone_number, Image
-        FROM Restaurant
-        WHERE Name LIKE ?
-        """
-        restaurants = execute_query(restaurant_query, ('%' + search_query + '%',), fetch_all=True)
-    else:
-        # Fetch all restaurants if no search query is provided
-        restaurant_query = """
-        SELECT ID, Name, Street, Building_number, Postcode, City, Phone_number, Image
-        FROM Restaurant
-        """
-        restaurants = execute_query(restaurant_query, fetch_all=True)
+    # Helper function for restaurant hours and delivery info
+    def get_restaurant_data(restaurant):
+        restaurant_id = restaurant[0]
+        restaurant_name = restaurant[1]
+        restaurant_email = restaurant[2]
+        restaurant_phone = restaurant[3]
+        restaurant_street = restaurant[4]
+        restaurant_building_number = restaurant[5]
+        restaurant_city = restaurant[6]
+        restaurant_postcode = restaurant[7]
+        restaurant_image = restaurant[8]
+        restaurant_description = restaurant[9]
+        restaurant_delivery_areas = restaurant[10]  # This will be a comma-separated list of areas
 
-    return render_template('browse_restaurants.html', restaurants=restaurants, credit_balance=credit_balance)
+        # Fetch today's opening hours
+        opening_hours = get_opening_hours(restaurant_id)
+        today_hours = get_today_opening_hours(opening_hours, today)
+
+        # Add open/close status to the formatted hours
+        formatted_today_hours = check_restaurant_status(opening_hours, current_time)
+
+        # Check delivery availability and fee
+        if restaurant_city == user_city:
+            delivery_info = "No Fee"
+        elif can_deliver_to_user(restaurant_city, user_city, restaurant_delivery_areas):
+            delivery_info = "2€"
+        else:
+            delivery_info = "Unavailable"
+
+        # Return the compiled restaurant data
+        return (
+            restaurant_id, restaurant_name, restaurant_email, restaurant_phone,
+            restaurant_street, restaurant_building_number, restaurant_city, restaurant_postcode,
+            restaurant_image, restaurant_description, formatted_today_hours, delivery_info
+        )
+
+    # Process each restaurant
+    for restaurant in restaurants:
+        # Apply search query filter only if a search query is provided
+        if search_query and search_query.lower() not in restaurant[1].lower():
+            continue  # Skip restaurants that don't match the search query
+
+        # Generate restaurant data and categorize it
+        restaurant_data = get_restaurant_data(restaurant)
+        if restaurant[6] == user_city:  # restaurant_city == user_city
+            near_you.append(restaurant_data)
+        else:
+            others.append(restaurant_data)
+
+    return render_template(
+        'browse_restaurants.html',
+        near_you=near_you,
+        others=others,
+        credit_balance=credit_balance,
+    )
 
 @app.route('/restaurant-details/<int:id>')
 def restaurant_details(id):
     user_id = session.get('user_id')  # Get the logged-in user's ID
 
-    conn = sqlite3.connect(DATABASE)
+    if not user_id:
+        return redirect(url_for('signin'))  # Redirect to login if user is not logged in
+
+    conn = sqlite3.connect(app.config.get('DATABASE', 'Main.db'))
     cursor = conn.cursor()
 
-    cursor.execute("SELECT Name, Street, Building_number, Postcode, City, Phone_number, Image FROM Restaurant WHERE ID = ?", (id,))
+    # Fetch restaurant details
+    cursor.execute("""
+        SELECT Name, Street, Building_number, Postcode, City, Phone_number, Image, Delivery_Areas
+        FROM Restaurant WHERE ID = ?
+    """, (id,))
     restaurant = cursor.fetchone()
 
-    cursor.execute("SELECT Item_name, Price, Description, Image, ID FROM Menu WHERE Restaurant_id = ?", (id,))
+    # If the restaurant does not exist
+    if not restaurant:
+        conn.close()
+        return redirect(url_for('browse_restaurants'))  # Redirect to browse restaurants
+
+    # Fetch menu items for the restaurant
+    cursor.execute("""
+        SELECT Item_name, Price, Description, Image, ID
+        FROM Menu WHERE Restaurant_id = ?
+    """, (id,))
     menu_items = cursor.fetchall()
 
-    # Get the count of unique menu items in the cart for the current user
-    cart_count = 0
-    if user_id:
-        cursor.execute("SELECT COUNT(DISTINCT Menu_Item_id) FROM Cart WHERE Customer_id = ?", (user_id,))
-        cart_count = cursor.fetchone()[0]
+    # Fetch the user's credit balance
+    cursor.execute("""
+        SELECT Balance
+        FROM Customer
+        WHERE ID = ?
+    """, (user_id,))
+    user_balance = cursor.fetchone()
+    credit_balance = user_balance[0] if user_balance else 100  # Default balance if not found
+
+    # Fetch the user's city
+    cursor.execute("""
+        SELECT City
+        FROM Customer
+        WHERE ID = ?
+    """, (user_id,))
+    user_city = cursor.fetchone()
+    user_city = user_city[0] if user_city else None
+
+    # Fetch today's opening hours
+    today = datetime.now().strftime('%A')  # Get today's day (e.g., "Monday")
+    cursor.execute("""
+        SELECT day, open_time, close_time, is_closed
+        FROM OpeningHours
+        WHERE Restaurant_id = ?
+    """, (id,))
+    opening_hours = cursor.fetchall()
+
+    # Determine today's hours and open/close status
+    today_hours = "Closed"
+    is_open = False
+    for day, open_time, close_time, is_closed in opening_hours:
+        if day == today:
+            if not is_closed and open_time <= datetime.now().strftime('%H:%M') <= close_time:
+                today_hours = f"{open_time} - {close_time}"
+                is_open = True
+            elif not is_closed:
+                today_hours = f"{open_time} - {close_time}"
+
+    # Check delivery availability
+    restaurant_city = restaurant[4]
+    delivery_areas = restaurant[7].split(',') if restaurant[7] else []  # Split delivery areas if not null
+    delivery_info = "Unavailable"
+    can_add_to_cart = False
+
+    if is_open:  # Check if the restaurant is open
+        if restaurant_city == user_city:
+            delivery_info = "No Fee"
+            can_add_to_cart = True
+        elif user_city in [area.strip() for area in delivery_areas]:
+            delivery_info = "2€"
+            can_add_to_cart = True
+    else:
+        delivery_info = "Restaurant is closed"
+
+    # Count distinct menu items in the user's cart
+    cursor.execute("""
+        SELECT COUNT(DISTINCT Menu_Item_id)
+        FROM Cart
+        WHERE Customer_id = ?
+    """, (user_id,))
+    cart_count = cursor.fetchone()[0]
 
     conn.close()
 
-    return render_template('restaurant_details.html', restaurant=restaurant, menu_items=menu_items, restaurant_id=id, cart_count=cart_count)
+    return render_template(
+        'restaurant_details.html',
+        restaurant=restaurant,
+        menu_items=menu_items,
+        restaurant_id=id,
+        cart_count=cart_count,
+        credit_balance=credit_balance,
+        today_hours=today_hours,
+        delivery_info=delivery_info,
+        can_add_to_cart=can_add_to_cart
+    )
 
 # Route to add items to the cart
 @app.route('/add_to_cart', methods=['POST'])
@@ -568,7 +768,7 @@ def view_cart():
     if not cart_items:
         return render_template('cart.html', cart_items=[], subtotal=0, delivery_fee=0, total_fee=0)
 
-    # Fetch customer and restaurant details
+    # Fetch customer details (postcode and city)
     customer_query = "SELECT Postcode, City FROM Customer WHERE ID = ?"
     customer_info = execute_query(customer_query, (user_id,), fetch_one=True)
 
@@ -577,8 +777,9 @@ def view_cart():
 
     customer_postcode, customer_city = customer_info
 
+    # Fetch restaurant details (postcode and city)
     restaurant_query = """
-    SELECT DISTINCT Restaurant.Postcode, Restaurant.City 
+    SELECT DISTINCT Restaurant.Postcode, Restaurant.City, Restaurant.Delivery_Areas
     FROM Restaurant 
     JOIN Cart ON Restaurant.ID = Cart.Restaurant_id 
     WHERE Cart.Customer_id = ?
@@ -588,20 +789,26 @@ def view_cart():
     if not restaurant_info:
         return jsonify({"error": "No restaurant found for this cart"}), 404
 
-    restaurant_postcode, restaurant_city = restaurant_info
+    restaurant_postcode, restaurant_city, restaurant_delivery_areas = restaurant_info
 
-    # Determine delivery fee
-    if str(customer_postcode).strip() == str(restaurant_postcode).strip() and customer_city.strip().lower() == restaurant_city.strip().lower():
-        delivery_fee = 0.00
-    elif str(customer_postcode).strip() != str(restaurant_postcode).strip() and customer_city.strip().lower() == restaurant_city.strip().lower():
-        delivery_fee = 3.00
+    # Determine the delivery fee
+    delivery_fee = 0
+
+    if restaurant_city == customer_city:
+        delivery_fee = 0  # No fee if in the same city
+    elif can_deliver_to_user(restaurant_city, customer_city, restaurant_delivery_areas):
+        delivery_fee = 2  # Fee if delivery is available to the user’s city
     else:
-        delivery_fee = 7.00
+        delivery_fee = None  # Delivery unavailable
 
     # Calculate subtotal
     subtotal = sum(item[1] * item[2] for item in cart_items)
     subtotal = round(subtotal, 2)
-    total_fee = round(subtotal + delivery_fee, 2)
+
+    if delivery_fee is not None:
+        total_fee = round(subtotal + delivery_fee, 2)
+    else:
+        total_fee = subtotal  # If no delivery, total is just subtotal
 
     formatted_cart = [
         {"item_name": item[0], "price": item[1], "quantity": item[2], "menu_item_id": item[3], "total": item[1] * item[2]}
@@ -726,12 +933,13 @@ def checkout():
 
     # Insert items into the Order_Items table
     query_insert_order_item = """
-    INSERT INTO Order_Items (Order_id, Menu_Item_id, Quantity)
-    VALUES (?, ?, ?)
+    INSERT INTO Order_Items (Order_id, Menu_Item_id, Menu_Item_Name, Price, Quantity)
+    VALUES (?, ?, ?, ?, ?)
     """
-    for item in cart_items:
-        menu_item_id, quantity = item
-        cursor.execute(query_insert_order_item, (order_id, menu_item_id, quantity))
+    for menu_item_id, quantity in cart_items:
+        menu_query = "SELECT Item_name, Price FROM Menu WHERE ID = ?"
+        menu_item = execute_query(menu_query, (menu_item_id,), fetch_one=True)
+        cursor.execute(query_insert_order_item, (order_id, menu_item_id, menu_item[0], menu_item[1], quantity))
 
     # Commit the transaction and close the connection
     connection.commit()
@@ -817,10 +1025,9 @@ def view_orders():
 
         # Query to fetch items for the current order
         query_items = """
-        SELECT Menu.Item_name, Menu.Price, Order_Items.Quantity
+        SELECT Menu_Item_name, Price, Quantity
         FROM Order_Items
-        JOIN Menu ON Order_Items.Menu_Item_id = Menu.ID
-        WHERE Order_Items.Order_id = ?
+        WHERE Order_id = ?
         """
         items = execute_query(query_items, (order_id,), fetch_all=True)
 
@@ -845,7 +1052,7 @@ def view_orders():
 def logout():
     return redirect(url_for('customer_signin'))
 
-@app.route('/restaurant-Logout')
+@app.route('/restaurant-logout')
 def restaurant_logout():
     return redirect(url_for('restaurant_signin'))
 
