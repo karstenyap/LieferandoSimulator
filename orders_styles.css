@@ -1,0 +1,181 @@
+/* Import Fredoka One from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredoka One', Arial, sans-serif;
+    background-image: url('/static/background.JPG');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    color: #333;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Header Styles */
+header {
+    width: 100%;
+    background-color: transparent;
+    padding: 10px 20px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+    color: black;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 18px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    background: linear-gradient(145deg, #f8e8f6, #ffffff);
+    border: 2px solid #800000;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+nav ul li a:hover {
+    transform: translateY(-3px);
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.2), -3px -3px 12px rgba(255, 255, 255, 0.7);
+}
+
+/* Main Content */
+main {
+    padding: 40px 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Orders Container */
+.orders-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Order Card */
+.order-card {
+    display: flex;
+    gap: 20px;
+    background-color: transparent;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    align-items: center;
+    text-align: left;
+}
+
+/* Restaurant Image */
+.order-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Order Details */
+.order-card div {
+    flex: 1;
+}
+
+.order-card h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.order-card p {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #333;
+}
+
+.item-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    margin: 5px 0;
+    color: black;
+}
+
+.remark-container {
+    margin-top: 10px;
+}
+
+.remark {
+    font-style: italic;
+    color: #666;
+}
+
+.price-status {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.price-status p {
+    font-size: 16px;
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Status Styling */
+.status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+.status.pending {
+    background-color: #f39c12;
+    color: white;
+}
+
+.status.completed {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.status.cancelled {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Empty Orders Message */
+main p {
+    font-size: 18px;
+    color: #333;
+    margin-top: 20px;
+}
