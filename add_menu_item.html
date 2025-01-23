@@ -8,18 +8,13 @@
     <link rel="stylesheet" href="/static/add_menu_styles.css">
 </head>
 <body>
-    <div class="action-buttons-container">
-        <button class="sign-out-btn" onclick="window.location.href='/logout'">Sign Out</button>
-    </div>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('menu_management') }}">Menu Management</a></li>
+            <li><a href="{{ url_for('restaurant_logout') }}">Logout</a></li>
+        </ul>
+    </nav>
 
-    <button class="back-button" onclick="history.back()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-    </button>
-    
-    
     <div class="container">
         <header>
             <h1>Can't wait for your new product!</h1>
@@ -62,12 +57,12 @@
                 
                         <div class="form-group">
                             <label for="description_0">Description</label>
-                            <textarea id="description_0" name="description[]" placeholder="Enter item description" required maxlength="100"></textarea>
-                            <small class="input-instruction" id="description-word-count-0">0/100 words</small>
+                            <textarea id="description_0" name="description[]" placeholder="Enter item description" required></textarea>
+                            <small class="input-instruction" id="description-word-count-0">0/100</small>
                         </div>
                     </div>
                 </div>
-                
+            </div>
 
             <!-- Buttons -->
             <div class="button-container">
