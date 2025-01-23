@@ -1,12 +1,11 @@
-/* Import Fredoka One from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
 /* General Styles */
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Fredoka One', Arial, sans-serif; 
-    background-image: url('/static/background.JPG'); 
+    font-family: 'Fredoka One', Arial, sans-serif;
+    background-image: url('/static/background.JPG');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -25,7 +24,7 @@ body {
     max-width: 900px;
     width: 100%;
     padding: 20px;
-    background: rgba(227, 215, 239, 0.8); 
+    background: rgba(227, 215, 239, 0.8);
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
@@ -80,7 +79,7 @@ input[type="time"] {
 }
 
 input[type="time"]:focus {
-    border-color: #3498db;
+    border-color: #6c63ff;
     outline: none;
 }
 
@@ -93,7 +92,7 @@ input[type="checkbox"] {
     width: 50px;
     height: auto;
     margin-left: 10px;
-    display: none; 
+    display: none;
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
     opacity: 0;
 }
@@ -101,7 +100,7 @@ input[type="checkbox"] {
 .sleeping-duck.visible {
     display: inline-block;
     opacity: 1;
-    transform: translateY(-10px); 
+    transform: translateY(-10px);
 }
 
 .closed-label {
@@ -118,32 +117,37 @@ input[type="checkbox"] {
     font-size: 14px;
     margin-top: 5px;
     text-align: left;
+    padding: 5px;
+    border-radius: 4px;
 }
 
 /* Submit Button */
-.btn-container {
+.buttons {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
 
-button {
-    padding: 12px 24px;
-    background: linear-gradient(145deg, #e8d6f0, #d6c4e8); 
-    color: #333; 
-    border: none;
-    border-radius: 8px;
+.buttons button {
+    font-size: 18px;
+    padding: 10px 20px;
     cursor: pointer;
-    font-family: inherit;
-    font-size: 1rem;
+    border-radius: 8px;
+    border: 2px solid #800000;
+    background: linear-gradient(145deg, #f8e8f6, #ffffff);
+    color: #333;
     font-weight: bold;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1), -2px -2px 10px rgba(255, 255, 255, 0.8);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-transform: uppercase;
+    font-family: 'Fredoka One', Arial, sans-serif;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-width: 120px;
 }
 
-button:hover {
+.buttons button:hover {
     transform: translateY(-3px);
-    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.2), -3px -3px 12px rgba(255, 255, 255, 0.7);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7);
+    background: linear-gradient(145deg, #f4dff0, #ffebff);
 }
 
 /* Responsive Design */
@@ -160,6 +164,21 @@ button:hover {
     h1 {
         font-size: 36px;
     }
+
+    .buttons button {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 28px;
+    }
+
+    .instructions {
+        font-size: 16px;
+    }
+}
 
     button {
         font-size: 18px;
