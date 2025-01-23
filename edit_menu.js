@@ -13,27 +13,45 @@ function previewImage(input, previewId) {
     }
 }
 
-function deleteMenuItem(button) {
-    var itemId = button.getAttribute('data-item-id');
 
-    fetch('/delete_menu_item/' + itemId, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const notification = document.getElementById('notification');
-            notification.style.display = 'block';
-            notification.innerHTML = `<p>${data.message} Please return to the <a href="/menu_management">menu management</a> page.</p>`;
-        } else {
-            alert('Failed to delete menu item.');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while deleting the menu item.');
-    });
+// Function to handle menu item deletion
+function deleteMenuItem(button) {
+    const itemId = button.getAttribute('data-item-id');
+    
+    // Confirm deletion
+    if (!confirm('Are you sure you want to delete this menu item?')) {
+        return;
+    }
+
+    // Make the DELETE request
+    fetch(`/delete_menu_item/${itemId}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Show notification
+                const notification = document.getElementById('notification');
+                notification.style.display = 'block';
+                
+                // Redirect to menu management after a delay
+                setTimeout(() => {
+                    window.location.href = '/menu_management';
+                }, 3000); // 3 seconds delay
+            } else {
+                alert('Failed to delete the menu item. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+}
+
+function showNotification() {
+    const notification = document.getElementById('notification');
+    notification.style.display = 'block';
+}
+
+function closeNotification() {
+    const notification = document.getElementById('notification');
+    notification.style.display = 'none';
 }
