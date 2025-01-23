@@ -6,6 +6,7 @@
     <title>Create Menu</title>
     <script src="/static/menu_jscript.js" defer></script>
     <link rel="stylesheet" href="/static/menu_styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -32,8 +33,6 @@
                             required />
                       </div>
                   </div>
-            
-
                     <!-- Item Details Section -->
                     <div class="menu-item-details">
                         <div class="form-group">
@@ -50,7 +49,7 @@
 
                         <div class="form-group">
                             <label for="description_0">Description</label>
-                            <textarea id="description_0" name="description[]" placeholder="Enter item description" required maxlength="100"></textarea>
+                            <textarea id="description_0" name="description[]" placeholder="Enter item description" required></textarea>
                             <small class="input-instruction" id="description-word-count-0">0/100 words</small>
                         </div>
                     </div>
@@ -59,9 +58,9 @@
 
             <!-- Buttons -->
             <div class="button-container">
-                <button type="button" id="add-menu-item-btn">Add Menu Item</button>
-                <button type="button" id="delete-menu-item-btn" onclick="deleteLastMenuItem()">Delete Last Item</button>
-                <button type="submit" id="save-menu-btn">Save Menu</button>
+                <button type="button" id="add-menu-item-btn" class="action-button">Add Menu Item</button>
+                <button type="button" id="delete-menu-item-btn" class="action-button" onclick="deleteLastMenuItem()">Delete Last Item</button>
+                <button type="submit" id="save-menu-btn" class="action-button">Save Menu</button>
             </div>
         </form>
     </div>
