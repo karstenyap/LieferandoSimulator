@@ -10,90 +10,78 @@ body {
     background-size: cover;
     background-attachment: fixed;
     display: flex;
-    justify-content: center;
-    /* Change align-items to center */
-    align-items: center; /* Ensures the form is centered vertically */
+    flex-direction: column;
+    align-items: center;
     height: 100vh;
     color: #333;
     text-align: center;
-    padding-top: 0; /* Remove the padding-top since buttons are misplaced */
+    overflow-y: auto; /* Enable scrolling for overflowing content */
 }
 
-.action-buttons-container {
-    position: absolute; /* Position the buttons relative to the page */
-    top: 20px; /* Optional: Position from the top */
-    right: 20px; /* Align buttons to the far right */
+/* Navigation Bar */
+nav {
+    width: 100%;
+    background: rgba(227, 215, 239, 0.9); /* Light pastel background */
+    position: fixed;
+    top: 0;
+    padding: 10px 20px;
+    z-index: 1000;
+}
+
+nav ul {
     display: flex;
-    flex-direction: column; /* Stack buttons vertically */
-    gap: 10px; /* Add spacing between buttons */
-    padding: 10px; /* Optional: Ensure the container has padding */
+    justify-content: flex-end;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* Sign Out Button */
-.sign-out-btn {
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
     font-family: inherit;
-    background: linear-gradient(145deg, #f8e8f6, #ffffff); /* Light pastel gradient */
+    background: linear-gradient(145deg, #f8e8f6, #ffffff);
     color: #333;
-    border: none;
     padding: 10px 20px;
     font-size: 18px;
     font-weight: bold;
     text-transform: uppercase;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8); /* Subtle 3D shadow */
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8);
     border-radius: 8px;
-    border: 2px solid #800000; /* Burgundy border */
+    border: 2px solid #800000;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    display: block;
 }
 
-.sign-out-btn:hover {
-    transform: translateY(-3px); /* Slight lift on hover */
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7); /* Enhanced shadow */
-    background: linear-gradient(145deg, #f4dff0, #ffebff); /* Slightly brighter pastel gradient */
+nav ul li a:hover {
+    transform: translateY(-3px);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7);
+    background: linear-gradient(145deg, #f4dff0, #ffebff);
 }
 
-.back-button {
-    position: fixed; /* Sticks to the top-left corner regardless of scrolling */
-    top: 10px;       /* Distance from the top of the screen */
-    left: 10px;      /* Distance from the left of the screen */
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    padding: 5px;
-    color: #007BFF; /* Change to your preferred color */
-    transition: color 0.2s ease;
-    z-index: 1000; /* Ensures the button appears on top of other elements */
-}
-
-.back-button:hover {
-    color: #0056b3; /* Change hover color */
-}
-
-.arrow-icon {
-    width: 24px;
-    height: 24px;
-    stroke: currentColor; /* Inherits the button's color */
-}
-
-
-
+/* Form Container */
 /* Form Container */
 .container {
     width: 100%;
     max-width: 900px;
-    background: transparent;
+    background: transparent; /* Semi-transparent background */
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
     display: flex;
-    flex-direction: column; /* Stack children vertically */
+    flex-direction: column;
     align-items: stretch;
-    gap: 20px; /* Add spacing between elements */
+    gap: 20px;
+    overflow-y: auto; /* Enable scrolling inside the container */
+    max-height: 90vh; /* Restrict height to prevent overflow */
+    margin-top: 80px; /* Adjust the value as needed for spacing */
 }
-
 
 
 h1 {
@@ -102,6 +90,7 @@ h1 {
     color: black;
 }
 
+/* Menu Item */
 .menu-item {
     display: flex;
     flex-wrap: wrap;
@@ -147,11 +136,10 @@ h1 {
     font-size: 14px;
     color: #777;
     text-align: center;
-    pointer-events: none; /* Prevents interference with file input clicks */
+    pointer-events: none;
 }
 
-
-
+/* Menu Item Details */
 .menu-item-details {
     flex: 1;
     text-align: left;
@@ -177,183 +165,31 @@ input, textarea {
     box-sizing: border-box;
 }
 
-.button-container {
-    display: flex;
-    justify-content: center; /* Center the buttons horizontally */
-    gap: 15px; /* Add spacing between buttons */
-    margin-top: 20px; /* Add spacing from the form above */
-}
-
-
-
+/* General Buttons */
 button {
-    background: linear-gradient(145deg, #d6c4e8, #b39ddb);
-    border: none;
-    padding: 12px 24px;
-    color: #333;
-    font-family: inherit;
-    font-size: 1rem;
-    border-radius: 5px;
+    font-size: 18px;
+    padding: 10px 20px;
     cursor: pointer;
-    box-shadow: 0 3px 6px rgba(250, 250, 250, 0);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 8px;
+    border: 2px solid #800000;
+    background: linear-gradient(145deg, #f8e8f6, #ffffff);
+    color: #333;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: 'Fredoka One', Arial, sans-serif;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-width: 120px;
 }
 
 button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 8px hsl(0, 0%, 96%);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7);
+    background: linear-gradient(145deg, #f4dff0, #ffebff);
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
-    }
-    .menu-item {
-        flex-direction: column;
-    }
-    .button-container {
-        flex-direction: column;
-        align-items: center; /* Center-align buttons */
-        gap: 15px; /* Add spacing between buttons */
-    }
-
-    
-}
-
-/* For screens smaller than 480px */
-@media (max-width: 479px) {
-
-    /* General Body Styles */
-    body {
-        padding-top: 20px; /* Adjust padding */
-    }
-
-    /* Action Buttons */
-    .action-buttons-container {
-        top: 10px;
-        right: 10px;
-        gap: 5px; /* Reduced spacing */
-        padding: 5px; /* Reduced padding */
-    }
-
-    /* Form Container */
-    .container {
-        padding: 10px; /* Less padding */
-        max-width: 100%; /* Make the container take full width */
-    }
-
-    h1 {
-        font-size: 1.8rem; /* Smaller font size for heading */
-    }
-
-    .menu-item {
-        flex-direction: column; /* Stack items vertically */
-    }
-
-    /* Menu Item Picture */
-    .item-picture-container {
-        width: 120px; /* Smaller picture size */
-        height: 120px;
-    }
-
-    .item-picture-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* Input fields */
-    input, textarea {
-        padding: 12px; /* Smaller padding */
-        font-size: 14px; /* Smaller font size */
-    }
-
-    /* Buttons */
-    .button-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 12px; /* Reduced button gap */
-    }
-
-    button {
-        width: 100%; /* Full-width buttons */
-        font-size: 14px; /* Smaller font size */
-    }
-
-    /* Back Button */
-    .back-button {
-        font-size: 14px; /* Smaller back button */
-        padding: 3px 5px;
-    }
-}
-
-/* For screens between 480px and 768px */
-@media (min-width: 480px) and (max-width: 768px) {
-
-    /* General Body Styles */
-    body {
-        padding-top: 30px; /* Slightly more padding */
-    }
-
-    /* Action Buttons */
-    .action-buttons-container {
-        top: 15px;
-        right: 15px;
-        gap: 8px; /* Reduced spacing */
-        padding: 8px; /* Slightly smaller padding */
-    }
-
-    /* Form Container */
-    .container {
-        padding: 15px;
-        max-width: 100%; /* Full-width container */
-    }
-
-    h1 {
-        font-size: 2rem; /* Slightly smaller font size */
-    }
-
-    /* Menu Item */
-    .menu-item {
-        flex-direction: column; /* Stack items vertically */
-    }
-
-    /* Menu Item Picture */
-    .item-picture-container {
-        width: 130px; /* Adjust image size */
-        height: 130px;
-    }
-
-    .item-picture-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    /* Input fields */
-    input, textarea {
-        padding: 13px; /* Slightly smaller padding */
-        font-size: 15px; /* Smaller font size */
-    }
-
-    /* Buttons */
-    .button-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 12px; /* Reduced button gap */
-    }
-
-    button {
-        width: 100%; /* Full-width buttons */
-        font-size: 15px; /* Slightly smaller font size */
-    }
-
-    /* Back Button */
-    .back-button {
-        font-size: 15px; /* Slightly larger font size */
-        padding: 4px 6px;
-    }
-}
-
-    
+.button-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
 }
