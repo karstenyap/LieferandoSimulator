@@ -15,15 +15,17 @@ CREATE TABLE "Customer" (
 CREATE TABLE "Restaurant" (
 	"ID"	INTEGER,
 	"Name"	TEXT NOT NULL,
-	"Email"	NUMERIC NOT NULL UNIQUE,
+	"Email"	TEXT NOT NULL UNIQUE,
+	"Description"	TEXT,
 	"Password"	TEXT NOT NULL,
 	"Phone_number"	INTEGER NOT NULL,
 	"Street"	TEXT NOT NULL,
 	"Building_number"	INTEGER NOT NULL,
-	"Postcode"	TEXT NOT NULL,
+	"Postcode"	INTEGER NOT NULL,
 	"City"	TEXT NOT NULL,
-	"Image"	TEXT,
-	"Profits" INTEGER,
+	"Image"	TEXT NOT NULL,
+	"Delivery_Areas"	TEXT,
+	"Profits"	INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
 
