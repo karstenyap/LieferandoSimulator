@@ -10,70 +10,58 @@ body {
     background-size: cover;
     background-attachment: fixed;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
     height: 100vh;
     color: #333;
     text-align: center;
     padding-top: 50px;
 }
 
-.action-buttons-container {
-    position: absolute; /* Position the buttons relative to the page */
-    top: 20px; /* Optional: Position from the top */
-    right: 20px; /* Align buttons to the far right */
+/* Navigation Bar */
+nav {
+    width: 100%;
+    background: rgba(227, 215, 239, 0.9); /* Light pastel background */
+    position: fixed;
+    top: 0;
+    padding: 10px 20px;
+    z-index: 1000;
+}
+
+nav ul {
     display: flex;
-    flex-direction: column; /* Stack buttons vertically */
-    gap: 10px; /* Add spacing between buttons */
-    padding: 10px; /* Optional: Ensure the container has padding */
+    justify-content: flex-end;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* Sign Out Button */
-.sign-out-btn {
+nav ul li {
+    margin: 0 15px;
+}
+
+nav ul li a {
     font-family: inherit;
-    background: linear-gradient(145deg, #f8e8f6, #ffffff); /* Light pastel gradient */
-    color: #333;
-    border: none;
-    padding: 10px 20px;
-    font-size: 18px;
-    font-weight: bold;
-    text-transform: uppercase;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8); /* Subtle 3D shadow */
-    border-radius: 8px;
-    border: 2px solid #800000; /* Burgundy border */
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.sign-out-btn:hover {
-    transform: translateY(-3px); /* Slight lift on hover */
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7); /* Enhanced shadow */
-    background: linear-gradient(145deg, #f4dff0, #ffebff); /* Slightly brighter pastel gradient */
-}
-
-/* Menu Management Link */
-.menu-management-link {
-    font-family: inherit;
-    background: linear-gradient(145deg, #f8e8f6, #ffffff); /* Light pastel gradient */
+    background: linear-gradient(145deg, #f8e8f6, #ffffff);
     color: #333;
     padding: 10px 20px;
     font-size: 18px;
     font-weight: bold;
     text-transform: uppercase;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8); /* Subtle 3D shadow */
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8);
     border-radius: 8px;
-    border: 2px solid #800000; /* Burgundy border */
+    border: 2px solid #800000;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-decoration: none; /* Remove underline */
+    text-decoration: none;
     text-align: center;
     display: block;
 }
 
-.menu-managemenet-link:hover {
-    transform: translateY(-3px); /* Slight lift on hover */
-    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7); /* Enhanced shadow */
-    background: linear-gradient(145deg, #f4dff0, #ffebff); /* Slightly brighter pastel gradient */
+nav ul li a:hover {
+    transform: translateY(-3px);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7);
+    background: linear-gradient(145deg, #f4dff0, #ffebff);
 }
 
 .back-button {
@@ -103,13 +91,15 @@ body {
 
 /* Form Container */
 .container {
+    margin-top: 80px; /* Space below the navbar */
     width: 100%;
     max-width: 900px;
-    background: transparent;    
+    background: transparent;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     box-sizing: border-box;
+    text-align: left;
 }
 
 h1 {
@@ -190,27 +180,27 @@ input, textarea {
 
 
 button {
-    width: 200px;
-    background: linear-gradient(145deg, #d6c4e8, #b39ddb);
-    border: none;
-    padding: 10px 20px; /* Compact padding */
-    color: #333;
     font-family: inherit;
-    font-size: 1rem;
+    background: linear-gradient(145deg, #f8e8f6, #ffffff); /* Light pastel gradient */
+    color: #333;
+    border: 2px solid #800000; /* Burgundy border */
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8); 
     border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    text-align: center; /* Center the text */
-    width: fit-content; /* Shrinks the button to fit the text */
-    height: auto;       /* Ensures it doesn’t stretch vertically */
-    display: inline-block; /* Avoids block-level stretching */
-    line-height: 1;     /* Matches the text height to avoid vertical gaps */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    display: block;
 }
 
 button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px hsl(0, 0%, 96%);
+    transform: translateY(-3px); 
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7); 
+    background: linear-gradient(145deg, #f4dff0, #ffebff); 
 }
 
 /* Specific style for Delete button */
@@ -228,152 +218,30 @@ button:hover {
 }
 
 .notification {
-    margin-top: 20px; /* Space between container and notification */
-    padding: 10px;
+    position: fixed; /* Makes it overlay on the entire page */
+    top: 50%; /* Centers vertically */
+    left: 50%; /* Centers horizontally */
+    transform: translate(-50%, -50%); /* Adjusts for perfect centering */
+    z-index: 1000; /* Ensures it appears above other elements */
+    padding: 20px; /* Extra padding for a prominent appearance */
     background-color: #f8d7da; /* Light red for visibility */
     color: #721c24; /* Dark red text for contrast */
     border: 1px solid #f5c6cb; /* Red border for consistency */
-    border-radius: 5px;
+    border-radius: 10px; /* Softer corners */
     text-align: center;
-    width: calc(100% - 40px); /* Adjust width slightly if needed */
-    max-width: 600px; /* Set a max-width for readability */
-    margin-left: auto; /* Center horizontally */
-    margin-right: auto;
-    box-sizing: border-box;
+    max-width: 400px; /* Limits size for readability */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Adds a shadow for prominence */
+    display: none; /* Initially hidden */
+    font-size: 1.2rem; /* Larger font for clarity */
+    animation: fadeIn 0.5s ease-in-out; /* Optional: Smooth fade-in */
 }
 
-/* Responsive Design */
-
-/* For screens with width up to 768px */
-@media (max-width: 768px) {
-    .menu-item {
-        flex-direction: column; /* Stack items vertically on small screens */
-        align-items: center;    /* Center items */
+/* Optional: Add fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
-
-    .item-picture-container {
-        width: 120px; /* Adjust image size */
-        height: 120px;
-    }
-
-    h1 {
-        font-size: 2rem; /* Adjust heading size */
-    }
-
-    .action-buttons-container {
-        top: 10px;
-        right: 10px;
-        gap: 8px; /* Reduce spacing between buttons */
-    }
-
-    button {
-        width: 180px; /* Adjust button size */
-    }
-
-    .back-button {
-        top: 15px; /* Adjust back button position */
-        left: 15px;
-    }
-}
-
-/* For screens with width up to 480px */
-@media (max-width: 480px) {
-    .menu-item {
-        gap: 15px; /* Reduce gap between menu items */
-    }
-
-    .item-picture-container {
-        width: 100px; /* Further reduce image size */
-        height: 100px;
-    }
-
-    h1 {
-        font-size: 1.5rem; /* Smaller heading size */
-    }
-
-    .action-buttons-container {
-        top: 5px;
-        right: 5px;
-        gap: 5px; /* Reduce spacing between buttons */
-    }
-
-    button {
-        width: 150px; /* Smaller buttons */
-    }
-
-    .back-button {
-        top: 10px;
-        left: 10px;
-    }
-}
-
-/* For screens between 768px and 480px */
-@media screen and (max-width: 767px) and (min-width: 481px) {
-
-    /* General Body Styles */
-    body {
-        padding-top: 40px; /* Adjust top padding */
-    }
-
-    /* Action Buttons Container */
-    .action-buttons-container {
-        top: 10px; /* Reduce space from top */
-        right: 10px; /* Keep right-aligned */
-        gap: 8px; /* Slightly smaller gap */
-        padding: 8px; /* Reduced padding */
-    }
-
-    /* Menu Item Details */
-    .menu-item-details {
-        flex: 1;
-        text-align: left;
-        gap: 15px; /* Slightly smaller gap */
-    }
-
-    /* Menu Item Image */
-    .item-picture-container {
-        width: 120px; /* Smaller image size */
-        height: 120px;
-    }
-
-    .item-picture-container img {
-        object-fit: cover;
-    }
-
-    /* Inputs and Textarea */
-    input, textarea {
-        padding: 12px; /* Slightly smaller padding */
-        font-size: 14px; /* Smaller font size */
-    }
-
-    /* Buttons */
-    .button-container {
-        gap: 12px; /* Slightly smaller button gap */
-    }
-
-    button {
-        width: 180px; /* Smaller button width */
-        font-size: 0.9rem; /* Smaller text size */
-    }
-
-    /* Notification */
-    .notification {
-        width: calc(100% - 30px); /* Adjust width */
-        max-width: 550px; /* Make it smaller */
-    }
-
-    /* Form Container */
-    .container {
-        padding: 15px; /* Less padding */
-    }
-
-    h1 {
-        font-size: 2rem; /* Smaller heading font */
-    }
-
-    /* Back Button */
-    .back-button {
-        font-size: 14px; /* Smaller text size */
-        padding: 3px 5px; /* Less padding */
+    to {
+        opacity: 1;
     }
 }
