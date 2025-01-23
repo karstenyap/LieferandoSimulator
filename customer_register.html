@@ -5,40 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Registration</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='customer_register_styles.css') }}">
+    <script src="{{ url_for('static', filename='customer_register.js') }}"></script>
 </head>
 <body>
     <header>
-        <h1>Register as a Customer</h1>
+        <h1>Welcome! Join us for more delicious cuisine!</h1>
     </header>
 
-    <div class="form-container">
-        <form method="POST">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" required>
+    <img id="duck" src="{{ url_for('static', filename='walkingduck.gif') }}" alt="Duck Animation">
 
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-
-            <label for="phone_number">Phone Number</label>
-            <input type="text" id="phone_number" name="phone_number" required>
-
-            <label for="street">Street</label>
-            <input type="text" id="street" name="street" required>
-
-            <label for="house_number">House Number</label>
-            <input type="text" id="house_number" name="house_number" required>
-
-            <label for="postcode">Postcode</label>
-            <input type="text" id="postcode" name="postcode" required>
-
-            <label for="city">City</label>
-            <input type="text" id="city" name="city" required>
-
-            <button type="submit" class="submit-btn">Register</button>
-        </form>
-    </div>
+    <form id="customer-register-form" method="POST" action="{{ url_for('customer_register') }}" enctype="multipart/form-data" onsubmit="return validateForm()">
+        <div class="row">
+            <div class="column">
+                <p>
+                    <label for="customer-name">Name</label>
+                    <input type="text" id="customer-name" name="name" placeholder="Enter your name" required>
+                    <span class="instruction">Maximum 10 words</span>
+                </p>
+                <p>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                </p>
+                <p>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter a password" required>
+                    <span class="instruction">Minimum 8 characters</span>
+                </p>
+            </div>
+            <div class="column">
+                <p>
+                    <label for="phone">Telephone</label>
+                    <input type="tel" id="phone" name="phone_number" placeholder="Enter your phone number" required>
+                </p>
+                <p>
+                    <label for="street">Street</label>
+                    <input type="text" id="street" name="street" placeholder="Enter your street name" required>
+                </p>
+                <p>
+                    <label for="building-number">Building Number</label>
+                    <input type="text" id="building-number" name="house_number" placeholder="Enter your building number" required>
+                </p>
+                <p>
+                    <label for="postcode">Postcode</label>
+                    <input type="text" id="postcode" name="postcode" placeholder="Enter your postcode" required>
+                </p>
+                <p>
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" placeholder="Enter your city" required>
+                </p>
+            </div>
+        </div>
+        <button type="submit" class="submit-btn">Join Us</button>
+    </form>
 </body>
 </html>
