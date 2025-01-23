@@ -1,0 +1,128 @@
+/* Import Fredoka One from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredoka One', Arial, sans-serif;
+    background-image: url('/static/background.JPG');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    color: #333;
+    display: flex;
+    flex-direction: column; /* Align content vertically */
+    justify-content: flex-start;
+    align-items: center; /* Center content horizontally */
+    height: 100vh;
+    text-align: center;
+    overflow-x: hidden;
+    padding-top: 50px; /* Space for the header */
+}
+
+/* Form Container */
+form {
+    width: 100%;
+    max-width: 900px; /* Limit maximum form width */
+    padding: 20px;
+    background: transparent; /* Semi-transparent background */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+/* Header Title */
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+/* Two-column Layout */
+.row {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    gap: 30px;
+    justify-content: space-between;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Column Styling */
+.column {
+    flex: 1;
+    min-width: 45%; /* Ensure columns are not too narrow */
+    max-width: 48%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+/* Label Styling */
+label {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+/* Input Field Styling */
+input,
+textarea {
+    font-family: inherit;
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+    height: 120px;
+}
+
+.instruction {
+    font-size: 12px;
+    color: #555;
+    margin-top: 5px;
+}
+
+/* Duck Styling */
+#duck {
+    width: 120px;
+    height: auto;
+    margin-left: 15px;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    cursor: pointer;
+}
+
+#duck:hover {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.8));
+}
+
+/* Submit Button */
+.submit-btn {
+    font-family: inherit;
+    padding: 12px 24px;
+    background: linear-gradient(145deg, #f8e8f6, #ffffff);
+    color: #333;
+    border: 2px solid #800000;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 20px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7);
+    background: linear-gradient(145deg, #f4dff0, #ffebff);
+}
