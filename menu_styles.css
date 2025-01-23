@@ -11,38 +11,33 @@ body {
     background-attachment: fixed;
     display: flex;
     justify-content: center;
-    /* Change align-items to center */
-    align-items: center; /* Ensures the form is centered vertically */
-    height: 100vh;
+    align-items: flex-start;
+    min-height: 100vh;
     color: #333;
     text-align: center;
-    padding-top: 0; /* Remove the padding-top since buttons are misplaced */
+    overflow-y: auto;
 }
-
 
 /* Form Container */
 .container {
     width: 100%;
     max-width: 900px;
-    background: transparent;
+    background: rgba(227, 215, 239, 0.9);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
-    display: flex;
-    flex-direction: column; /* Stack children vertically */
-    align-items: stretch;
-    gap: 20px; /* Add spacing between elements */
+    margin: 20px auto;
 }
-
-
 
 h1 {
     font-size: 2.5rem;
     margin-bottom: 20px;
     color: black;
+    text-shadow: 1px 1px 3px white;
 }
 
+/* Menu Item Section */
 .menu-item {
     display: flex;
     flex-wrap: wrap;
@@ -67,13 +62,13 @@ h1 {
 }
 
 .item-picture-container img {
-    display: none; /* Initially hidden */
+    display: none;
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.item-picture-container input {
+.item-picture-container input[type="file"] {
     position: absolute;
     top: 0;
     left: 0;
@@ -88,10 +83,8 @@ h1 {
     font-size: 14px;
     color: #777;
     text-align: center;
-    pointer-events: none; /* Prevents interference with file input clicks */
+    pointer-events: none;
 }
-
-
 
 .menu-item-details {
     flex: 1;
@@ -102,7 +95,7 @@ h1 {
 
 label {
     display: block;
-    font-size: 24px;
+    font-size: 16px;
     font-weight: bold;
     margin-bottom: 5px;
 }
@@ -110,53 +103,54 @@ label {
 input, textarea {
     font-family: inherit;
     width: 100%;
-    padding: 15px;
+    padding: 10px;
     margin-bottom: 10px;
-    font-size: 16px;
+    font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
 }
 
+textarea {
+    resize: vertical;
+}
+
 .button-container {
     display: flex;
-    justify-content: center; /* Center the buttons horizontally */
-    gap: 15px; /* Add spacing between buttons */
-    margin-top: 20px; /* Add spacing from the form above */
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
 }
 
-
-
-button {
-    background: linear-gradient(145deg, #d6c4e8, #b39ddb);
-    border: none;
-    padding: 12px 24px;
-    color: #333;
-    font-family: inherit;
-    font-size: 1rem;
-    border-radius: 5px;
+/* Buttons */
+.action-button {
+    font-size: 18px;
+    padding: 10px 20px;
     cursor: pointer;
-    box-shadow: 0 3px 6px rgba(250, 250, 250, 0);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 8px;
+    border: 2px solid #800000;
+    background: linear-gradient(145deg, #f8e8f6, #ffffff);
+    color: #333;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: 'Fredoka One', Arial, sans-serif;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-width: 120px;
 }
 
-button:hover {
+.action-button:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 8px hsl(0, 0%, 96%);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7);
+    background: linear-gradient(145deg, #f4dff0, #ffebff);
 }
 
 @media (max-width: 768px) {
-    .container {
-        padding: 15px;
-    }
     .menu-item {
         flex-direction: column;
     }
+
     .button-container {
         flex-direction: column;
-        align-items: center; /* Center-align buttons */
-        gap: 15px; /* Add spacing between buttons */
     }
-
-    
 }
