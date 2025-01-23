@@ -4,57 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
+    <script src="/static/cart_jscript.js" defer></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='cart_styles.css') }}">
 </head>
 <body>
     <header>
-        <h1>Your Cart</h1>
+        <h1>Cart</h1>
         <nav>
-            <a href="/browse-restaurants">Browse Restaurants</a>
+            <a href="{{ url_for('browse_restaurants') }}">Browse</a>
+            <a href="{{ url_for('logout') }}">Sign out</a>
         </nav>
     </header>
+
+    <button class="back-button" onclick="history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </button>
+
     <main>
-        <!-- Order Preview Section -->
-        <section class="cart-preview">
-            <h2>Your Order</h2>
-            {% if cart_items %}
-                <ul>
-                    {% for item in cart_items %}
-                    <li>
-                        <span>{{ item.item_name }}</span>
-                        <span>Quantity: {{ item.quantity }}</span>
-                        <span>Price: €{{ item.price }}</span>
-                        <span>Total: €{{ item.total }}</span>
-                        
-                        <!-- Remove Button -->
-                        <form method="POST" action="{{ url_for('remove_from_cart') }}">
-                            <input type="hidden" name="menu_item_id" value="{{ item.menu_item_id }}">
-                            <button type="submit">Remove</button>
-                        </form>                        
-                    </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>Your cart is empty!</p>
-            {% endif %}
-        </section>
-
-        <!-- Fees Summary -->
-        <section class="fees-summary">
-            <h3>Order Summary</h3>
-            <p><strong>Subtotal:</strong> €{{ subtotal }}</p>
-            <p><strong>Delivery Fee:</strong> €{{ delivery_fee }}</p>
-            <p><strong>Total Fee:</strong> €{{ total_fee }}</p>
-        </section>
-
-        <!-- Checkout Section -->
-        <section class="checkout">
-            <h3>Remarks</h3>
-            <form action="{{ url_for('checkout') }}" method="POST">
-                <textarea name="remark" rows="4" placeholder="Add a remark..."></textarea>
-                <button type="submit">Checkout</button>
-            </form>
-        </section>
+        <div class="container">
+            <section class="cart-preview">
+                <h2>Your Order</h2>
+                {% if cart_items %}
+                    <ul>
+                        {% for item in cart_items %}
+                        <li>
+                            <span>{{ item.item_name }}</span>
+                            <span>Quantity: {{ item.quantity }}</span>
+                            <span>Price: €{{ item.price }}</span>
+                            <span>Total: €{{ item.total }}</span>
+                            
+                            <!-- Remove Button -->
+                            <form method="POST" action="{{ url_for('remove_from_cart') }}">
+                                <input type="hidden" name="menu_item_id" value="{{ item['menu_item_id'] }}">
+                                <button type="submit" class="remove-button">Remove</button>
+                            </form>                        
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Your cart is empty!</p>
+                {% endif %}
+            </section>
+    
+            <!-- Fees Summary -->
+            <section class="fees-summary">
+                <h3>Order Summary</h3>
+                <p><strong>Subtotal:</strong> €{{ subtotal }}</p>
+                <p><strong>Delivery Fee:</strong> €{{ delivery_fee }}</p>
+                <p><strong>Total Fee:</strong> €{{ total_fee }}</p>
+            </section>
+    
+            <!-- Checkout Button -->
+            <section class="checkout">
+                <h3>Remarks</h3>
+                <form action="{{ url_for('checkout') }}" method="POST">
+                    <textarea name="remark" rows="4" placeholder="Add a remark..."></textarea>
+                    <button type="submit">Checkout</button>
+                </form>
+            </section>
+        </div>
     </main>
 </body>
 </html>
