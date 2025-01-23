@@ -13,46 +13,84 @@
         <div class="logo">
             <h1>Lieferspatz</h1>
         </div>
+        <div class="credit-balance">
+            <p>Your Credit Balance: €{{ credit_balance }}</p>
+        </div>
         <nav>
             <ul>
-                <li><a href="{{ url_for('browse_restaurants') }}">Back to Browse</a></li>
+                <li><a href="{{ url_for('browse_restaurants') }}">Browse</a></li>
+                <li><a href="{{ url_for('logout') }}">Sign out</a></li>
             </ul>
         </nav>
-        <!-- Cart Icon -->
+    </header>
+
+    <div class="cart-container">
         <a href="/cart" class="cart-icon">
             🛒 <span id="cart-count">{{ cart_count }}</span>
         </a>
-    </header>
+    </div>
+
+    <button class="back-button" onclick="history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </button>
 
     <main>
         <section class="restaurant-info">
-            {% if restaurant[6] %}
-                <img src="{{ url_for('static', filename='uploads/' + restaurant[6]) }}">
-            {% endif %}
-            <h2>{{ restaurant[0] }}</h2>
-            <p><strong>Address:</strong> {{ restaurant[1] }} {{ restaurant[2] }}, {{ restaurant[3] }}, {{ restaurant[4] }}</p>
-            <p><strong>Phone:</strong> {{ restaurant[5] }}</p>
+            <div class="restaurant-container">
+                <div class="restaurant-image">
+                    {% if restaurant[6] %}
+                        <img src="{{ url_for('static', filename='uploads/' + restaurant[6]) }}" alt="{{ restaurant[0] }}">
+                    {% endif %}
+                </div>
+                <div class="restaurant-details">
+                    <h2>{{ restaurant[0] }}</h2>
+                    <p><strong>Address:</strong> {{ restaurant[1] }} {{ restaurant[2] }}, {{ restaurant[3] }}, {{ restaurant[4] }}</p>
+                    <p><strong>Phone:</strong> {{ restaurant[5] }}</p>
+                    <p><strong>Today's Hours:</strong> {{ today_hours }}</p>
+                    <p><strong>Delivery:</strong> {{ delivery_info }}</p>
+                    {% if delivery_info == "Unavailable" %}
+                        <p style="color: red;"><strong>Note:</strong> Delivery is not available to your city.</p>
+                    {% endif %}
+                </div>
+            </div>
         </section>
 
         <section class="menu">
-            <h3>Menu</h3>
+            <h3>Just one click away and these delicacies will be yours.</h3>
             {% if menu_items %}
                 <div class="menu-items">
                     {% for item in menu_items %}
                     <div class="menu-item">
-                        <h4>{{ item[0] }}</h4>
-                        <p><strong>Price:</strong> ${{ item[1] }}</p>
-                        <p>{{ item[2] }}</p>
-                        {% if item[3] %}
-                            <img src="{{ url_for('static', filename='uploads/' + item[3]) }}">
-                        {% endif %}
-                        <form id="add-to-cart-form-{{ item[4] }}" class="add-to-cart-form" action="{{ url_for('add_to_cart') }}" method="POST">
-                            <input type="hidden" name="restaurant_id" value="{{ restaurant_id }}" required>
-                            <input type="hidden" name="menu_item_id" value="{{ item[4] }}" required>
-                            <label for="quantity_{{ item[4] }}">Quantity:</label>
-                            <input type="number" id="quantity_{{ item[4] }}" name="quantity" value="1" min="1" required>
-                            <button type="submit">Add to Cart</button>
-                        </form>
+                        <div class="menu-item-container">
+                            <div class="menu-item-image">
+                                {% if item[3] %}
+                                    <img src="{{ url_for('static', filename='uploads/' + item[3]) }}" alt="{{ item[0] }}">
+                                {% endif %}
+                            </div>
+                            <div class="menu-item-description">
+                                <h4>{{ item[0] }}</h4>
+                                <p>{{ item[2] }}</p>
+                            </div>
+                        </div>
+                        <div class="menu-item-footer">
+                            <p><strong>Price:</strong> €{{ item[1] }}</p>
+                            <form id="add-to-cart-form-{{ item[4] }}" class="add-to-cart-form" action="{{ url_for('add_to_cart') }}" method="POST">
+                                <input type="hidden" name="restaurant_id" value="{{ restaurant_id }}" required>
+                                <input type="hidden" name="menu_item_id" value="{{ item[4] }}" required>
+                                <label for="quantity_{{ item[4] }}">Quantity:</label>
+                                <input type="number" id="quantity_{{ item[4] }}" name="quantity" value="1" min="1" required>
+                                {% if can_add_to_cart %}
+                                    <button type="submit">Add to Cart</button>
+                                {% elif today_hours == "Closed" %}
+                                    <p style="color: gray;"><em>The restaurant is currently closed.</em></p>
+                                {% else %}
+                                    <p style="color: red;"><em>Delivery is not available to your city.</em></p>
+                                {% endif %}
+                            </form>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>
