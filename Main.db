@@ -16,16 +16,16 @@ CREATE TABLE "Restaurant" (
 	"ID"	INTEGER,
 	"Name"	TEXT NOT NULL,
 	"Email"	TEXT NOT NULL UNIQUE,
-	"Description"	TEXT,
 	"Password"	TEXT NOT NULL,
 	"Phone_number"	INTEGER NOT NULL,
 	"Street"	TEXT NOT NULL,
 	"Building_number"	INTEGER NOT NULL,
-	"Postcode"	INTEGER NOT NULL,
+	"Postcode"	TEXT NOT NULL,
 	"City"	TEXT NOT NULL,
-	"Image"	TEXT NOT NULL,
+	"Image"	TEXT,
+	"Description"	TEXT,
+	"Profits"	INTEGER DEFAULT 0,
 	"Delivery_Areas"	TEXT,
-	"Profits"	INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
 
@@ -78,8 +78,10 @@ CREATE TABLE "Order_Items" (
 	"Order_Item_id"	INTEGER,
 	"Order_id"	INTEGER NOT NULL,
 	"Menu_Item_id"	INTEGER NOT NULL,
+	"Menu_Item_Name"	TEXT,
+	"Price"	INTEGER,
 	"Quantity"	INTEGER NOT NULL,
-	PRIMARY KEY("id" AUTOINCREMENT),
+	PRIMARY KEY("Order_Item_id" AUTOINCREMENT),
 	FOREIGN KEY("Menu_Item_id") REFERENCES "Menu"("ID"),
 	FOREIGN KEY("Order_id") REFERENCES "Orders"("Orders_id")
 );
