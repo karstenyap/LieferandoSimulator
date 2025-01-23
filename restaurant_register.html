@@ -20,7 +20,7 @@
                     <label for="image">Restaurant Logo</label>
                     <div class="image-container">
                         <div class="profile-picture-container" onclick="document.getElementById('image').click()">
-                            <img id="image-preview" src="#" alt="Image Preview" />
+                            <img id="image-preview" src="#" alt="Image Preview"/>
                             <input type="file" id="image" name="image" accept="image/*" style="display: none" onchange="previewImage(event)" required>
                         </div>
                     </div>
@@ -38,6 +38,18 @@
                         <label for="password">Password</label>
                         <input type="password" id="password" name="password" placeholder="Enter password" required>
                         <span class="instruction">Minimum 8 characters</span>
+                    </p>
+                    <p>
+                        <label for="delivery-areas">Delivery Areas</label>
+                        <div id="delivery-areas">
+                            {% for area in delivery_areas %}
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="area-{{ loop.index }}" name="delivery_areas" value="{{ area }}">
+                                    <label for="area-{{ loop.index }}">{{ area }}</label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <span class="instruction">Check one or more areas for delivery.</span>
                     </p>
                 </div>
 
@@ -73,7 +85,9 @@
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="submit-btn">Next Step</button>
+            <div class="buttons">
+                <button type="submit">Next Step</button>
+            </div>
         </form>
     </div>
 </body>
