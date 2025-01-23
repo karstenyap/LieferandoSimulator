@@ -12,17 +12,24 @@
         <div class="logo">
             <h1>Lieferspatz</h1>
         </div>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('view_orders') }}">Track Orders</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
-            </ul>
-        </nav>
-
         <div class="credit-balance">
             <p>Your Credit Balance: €{{ credit_balance }}</p>
         </div>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('browse_restaurants') }}">Browse</a></li>
+                <li><a href="{{ url_for('view_orders') }}">Track Orders</a></li>
+                <li><a href="{{ url_for('logout') }}">Sign out</a></li>
+            </ul>
+        </nav>
     </header>
+
+    <button class="back-button" onclick="history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </button>
 
     <main>
         <div class="welcome-banner">
@@ -30,25 +37,76 @@
             <p>Click on a restaurant to view its menu and more details.</p>
         </div>
 
-        <form method="POST" action="{{ url_for('browse_restaurants') }}">
-            <input type="text" id="search-input" name="search" placeholder="Search for restaurants...">
-            <button type="submit" id="search-button">Search</button>
+        <!-- Search Form -->
+        <form method="POST" action="{{ url_for('browse_restaurants') }}" class="search-form">
+            <div class="search-container">
+                <input type="text" id="search-input" name="search" placeholder="Search for restaurants...">
+                <button type="submit" id="search-button">Search</button>
+            </div>
         </form>
 
-        <div class="restaurant-list">
-            {% for restaurant in restaurants %}
-            <div class="restaurant-card">
-                <a href="{{ url_for('restaurant_details', id=restaurant[0]) }}" class="restaurant-link">
-                    {% if restaurant[7] %}
-                            <img src="{{ url_for('static', filename='uploads/' + restaurant[7]) }}">
-                    {% endif %}
-                    <h3>{{ restaurant[1] }}</h3>
-                    <p><strong>Address:</strong> {{ restaurant[2] }} {{ restaurant[3] }}, {{ restaurant[4] }}, {{ restaurant[5] }}</p>
-                    <p><strong>Phone:</strong> {{ restaurant[6] }}</p>
-                </a>
+        <!-- Sections -->
+        {% if near_you %}
+        <section class="restaurant-section">
+            <h2>Near You</h2>
+            <div class="restaurant-list">
+                {% for restaurant in near_you %}
+                <div class="restaurant-card">
+                    <a href="{{ url_for('restaurant_details', id=restaurant[0]) }}" class="restaurant-link">
+                        <div class="restaurant-container">
+                            <img src="{{ url_for('static', filename='uploads/' + restaurant[8]) }}" alt="Restaurant Image">
+                            <div class="restaurant-details">
+                                <h3>{{ restaurant[1] }}</h3>
+                                <p>{{ restaurant[9] }}</p>
+                                <div class="restaurant-hours">
+                                    <p>
+                                        <strong>Today's Hours:</strong>
+                                        <span class="{{ 'closed' if 'Closed' in restaurant[10] else 'open' }}">
+                                            {{ restaurant[10] }}
+                                        </span>
+                                    </p>
+                                    <p><strong>Delivery:</strong> {{ restaurant[11] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>                
+        </section>
+        {% endif %}
+
+        {% if others %}
+        <section class="restaurant-section">
+            <h2>Other Restaurants</h2>
+            <div class="restaurant-list">
+                {% for restaurant in others %}
+                <div class="restaurant-card">
+                    <a href="{{ url_for('restaurant_details', id=restaurant[0]) }}" class="restaurant-link">
+                        <div class="restaurant-container">
+                            <img src="{{ url_for('static', filename='uploads/' + restaurant[8]) }}" alt="Restaurant Image">
+                            <div class="restaurant-details">
+                                <h3>{{ restaurant[1] }}</h3>
+                                <p>{{ restaurant[9] }}</p>
+                                <div class="restaurant-hours">
+                                    <p>
+                                        <strong>Today's Hours:</strong>
+                                        <span class="{{ 'closed' if 'Closed' in restaurant[10] else 'open' }}">
+                                            {{ restaurant[10] }}
+                                        </span>
+                                    </p>
+                                    <p><strong>Delivery:</strong> {{ restaurant[11] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
     </main>
 </body>
 </html>
