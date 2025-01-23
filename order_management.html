@@ -23,43 +23,39 @@
             <div class="orders-container">
                 {% for order in orders %}
                 <div class="order-card">
-                    <div>
-                        <p>Order ID: {{ order.Orders_id }}</p>
-                        <p>Order Date: {{ order.Order_Date }}</p>
-                        <div class="item-list">
-                            <ul>
-                                {% for item in order.Items %}
-                                <li>{{ item.Item_name }}  <span> x{{ item.Quantity }}</span></li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="remark-container">
-                            <p class="remark">Remark: {{ order.Remark }}</p>
-                        </div>
-                        <div class="price-status">
-                            <p class="total">Total: €{{ '%.2f' | format(order.Total_Amount) }}</p>
-                            <p class="status {{ order.Order_Status|lower }}">{{ order.Order_Status }}</p>
-                        </div>
+                    <div class="order-header">
+                        <p><strong>Order ID:</strong> {{ order.Orders_id }}</p>
+                        <p><strong>Order Date:</strong> {{ order.Order_Date }}</p>
                     </div>
-                    {% if order.Order_Status == 'Pending' or order.Order_Status == 'In Preparation' %}
+                    <ul class="item-list">
+                        {% for item in order.Items %}
+                        <li>{{ item.Item_name }} <span>x{{ item.Quantity }}</span></li>
+                        {% endfor %}
+                    </ul>
+                    <p class="remark"><strong>Remark:</strong> {{ order.Remark }}</p>
+                    <p class="total-amount"><strong>Total:</strong> €{{ '%.2f' | format(order.Total_Amount) }}</p>
+                    <p class="order-status {{ order.Order_Status|lower }}"><strong>Status:</strong> {{ order.Order_Status }}</p>
+
+                    {% if order.Order_Status in ['Pending', 'In Preparation'] %}
                     <form method="POST" action="{{ url_for('update_order_status') }}">
                         <input type="hidden" name="order_id" value="{{ order.Orders_id }}">
-                        <button type="submit" name="status" value="In Preparation">In Preparation</button>
-                        <button type="submit" name="status" value="Completed">Completed</button>
-                        <button type="submit" name="status" value="Cancelled">Cancel</button>
+                        <button class="btn-yellow" type="submit" name="status" value="In Preparation">In Preparation</button>
+                        <button class="btn-green" type="submit" name="status" value="Completed">Completed</button>
+                        <button class="btn-red" type="submit" name="status" value="Cancelled">Cancel</button>
                     </form>
                     {% else %}
-                        <span>No actions available</span>
+                    <p>No further actions available.</p>
                     {% endif %}
-                    <div class="customer-container">
-                            <p class="customerName">Name: {{ order.Customer.Name }}</p>
-                            <p class="address">{{ order.Customer.Street }}, {{ order.Customer.House_number }}, {{ order.Customer.Postcode }}, {{ order.Customer.City }}</p>
+
+                    <div class="customer-info">
+                        <p><strong>Customer:</strong> {{ order.Customer.Name }}</p>
+                        <p><strong>Address:</strong> {{ order.Customer.Street }}, {{ order.Customer.House_number }}, {{ order.Customer.Postcode }}, {{ order.Customer.City }}</p>
                     </div>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <p>You have no orders yet.</p>
+            <p>No orders to display.</p>
             {% endif %}
         </section>
     </main>
