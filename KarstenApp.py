@@ -493,9 +493,15 @@ def get_today_opening_hours(opening_hours, today):
 
 # Check if the restaurant can deliver to the user's city
 def can_deliver_to_user(restaurant_city, user_city, restaurant_delivery_areas):
-    if not restaurant_delivery_areas:
-        return False
-    delivery_areas = [area.strip() for area in restaurant_delivery_areas.split(',')]
+    if not restaurant_city or not user_city or not restaurant_delivery_areas:
+        return False  # Delivery not possible if any data is missing
+
+    # Normalize all inputs to lowercase for consistent comparisons
+    restaurant_city = restaurant_city.strip().lower()
+    user_city = user_city.strip().lower()
+    delivery_areas = [area.strip().lower() for area in restaurant_delivery_areas.split(',')]
+
+    # Check if the user's city matches the restaurant city or is within delivery areas
     return user_city == restaurant_city or user_city in delivery_areas
 
 # Check restaurant status based on opening hours and current time
@@ -524,7 +530,7 @@ def check_restaurant_status(opening_hours, current_time):
 
 
 # Browse restaurants route
-@app.route('/browse_restaurants', methods=['GET', 'POST'])
+@app.route('/browse-restaurants', methods=['GET', 'POST'])
 def browse_restaurants():
     user_city = get_user_city()
     if not user_city:
@@ -610,10 +616,11 @@ def restaurant_details(id):
     cursor = conn.cursor()
 
     # Fetch restaurant details
-    cursor.execute("""
-        SELECT Name, Street, Building_number, Postcode, City, Phone_number, Image, Delivery_Areas
-        FROM Restaurant WHERE ID = ?
-    """, (id,))
+    restaurant_query = """
+    SELECT Name, Street, Building_number, Postcode, City, Phone_number, Image, Delivery_Areas
+    FROM Restaurant WHERE ID = ?
+    """
+    cursor.execute(restaurant_query, (id,))
     restaurant = cursor.fetchone()
 
     # If the restaurant does not exist
@@ -622,27 +629,30 @@ def restaurant_details(id):
         return redirect(url_for('browse_restaurants'))  # Redirect to browse restaurants
 
     # Fetch menu items for the restaurant
-    cursor.execute("""
-        SELECT Item_name, Price, Description, Image, ID
-        FROM Menu WHERE Restaurant_id = ?
-    """, (id,))
+    menu_items_query = """
+    SELECT Item_name, Price, Description, Image, ID
+    FROM Menu WHERE Restaurant_id = ?
+    """
+    cursor.execute(menu_items_query, (id,))
     menu_items = cursor.fetchall()
 
     # Fetch the user's credit balance
-    cursor.execute("""
-        SELECT Balance
-        FROM Customer
-        WHERE ID = ?
-    """, (user_id,))
+    balance_query = """
+    SELECT Balance
+    FROM Customer
+    WHERE ID = ?
+    """
+    cursor.execute(balance_query, (user_id,))
     user_balance = cursor.fetchone()
     credit_balance = user_balance[0] if user_balance else 100  # Default balance if not found
 
     # Fetch the user's city
-    cursor.execute("""
-        SELECT City
-        FROM Customer
-        WHERE ID = ?
-    """, (user_id,))
+    customer_city = """
+    SELECT City
+    FROM Customer
+    WHERE ID = ?
+    """
+    cursor.execute(customer_city, (user_id,))
     user_city = cursor.fetchone()
     user_city = user_city[0] if user_city else None
 
@@ -692,17 +702,7 @@ def restaurant_details(id):
 
     conn.close()
 
-    return render_template(
-        'restaurant_details.html',
-        restaurant=restaurant,
-        menu_items=menu_items,
-        restaurant_id=id,
-        cart_count=cart_count,
-        credit_balance=credit_balance,
-        today_hours=today_hours,
-        delivery_info=delivery_info,
-        can_add_to_cart=can_add_to_cart
-    )
+    return render_template('restaurant_details.html', restaurant=restaurant, menu_items=menu_items, restaurant_id=id, cart_count=cart_count, credit_balance=credit_balance, today_hours=today_hours, delivery_info=delivery_info, can_add_to_cart=can_add_to_cart)
 
 # Route to add items to the cart
 @app.route('/add_to_cart', methods=['POST'])
@@ -768,50 +768,53 @@ def view_cart():
     if not cart_items:
         return render_template('cart.html', cart_items=[], subtotal=0, delivery_fee=0, total_fee=0)
 
-    # Fetch customer details (postcode and city)
-    customer_query = "SELECT Postcode, City FROM Customer WHERE ID = ?"
+    # Fetch customer details (city)
+    customer_query = "SELECT City FROM Customer WHERE ID = ?"
     customer_info = execute_query(customer_query, (user_id,), fetch_one=True)
 
     if not customer_info:
         return jsonify({"error": "Customer not found"}), 404
 
-    customer_postcode, customer_city = customer_info
+    customer_city = customer_info[0].strip()
 
-    # Fetch restaurant details (postcode and city)
+    # Fetch restaurant details (city and delivery areas)
     restaurant_query = """
-    SELECT DISTINCT Restaurant.Postcode, Restaurant.City, Restaurant.Delivery_Areas
+    SELECT Restaurant.City, Restaurant.Delivery_Areas
     FROM Restaurant 
     JOIN Cart ON Restaurant.ID = Cart.Restaurant_id 
     WHERE Cart.Customer_id = ?
     """
     restaurant_info = execute_query(restaurant_query, (user_id,), fetch_one=True)
 
-    if not restaurant_info:
-        return jsonify({"error": "No restaurant found for this cart"}), 404
+    if not restaurant_info or len(restaurant_info) < 2:
+        return jsonify({"error": "Incomplete restaurant information"}), 404
 
-    restaurant_postcode, restaurant_city, restaurant_delivery_areas = restaurant_info
+    restaurant_city, restaurant_delivery_areas = restaurant_info
+    restaurant_city = restaurant_city.strip()
+    restaurant_delivery_areas = restaurant_delivery_areas.strip()
 
     # Determine the delivery fee
-    delivery_fee = 0
+    if not can_deliver_to_user(restaurant_city, customer_city, restaurant_delivery_areas):
+        return jsonify({"error": "Delivery unavailable to your city"}), 400
 
-    if restaurant_city == customer_city:
-        delivery_fee = 0  # No fee if in the same city
-    elif can_deliver_to_user(restaurant_city, customer_city, restaurant_delivery_areas):
-        delivery_fee = 2  # Fee if delivery is available to the user’s city
-    else:
-        delivery_fee = None  # Delivery unavailable
+    delivery_fee = 0.00 if restaurant_city.lower() == customer_city.lower() else 2.00
 
     # Calculate subtotal
-    subtotal = sum(item[1] * item[2] for item in cart_items)
+    subtotal = sum((item[1] or 0) * (item[2] or 0) for item in cart_items)
     subtotal = round(subtotal, 2)
 
-    if delivery_fee is not None:
-        total_fee = round(subtotal + delivery_fee, 2)
-    else:
-        total_fee = subtotal  # If no delivery, total is just subtotal
+    # Calculate total fee
+    total_fee = round(subtotal + delivery_fee, 2)
 
+    # Format cart for display
     formatted_cart = [
-        {"item_name": item[0], "price": item[1], "quantity": item[2], "menu_item_id": item[3], "total": item[1] * item[2]}
+        {
+            "item_name": item[0],
+            "price": item[1],
+            "quantity": item[2],
+            "menu_item_id": item[3],
+            "total": round(item[1] * item[2], 2),
+        }
         for item in cart_items
     ]
 
@@ -838,35 +841,36 @@ def checkout():
     if not cart_items:
         return redirect(url_for('view_cart'))  # Redirect if cart is empty
 
-    # Fetch customer and restaurant details
-    customer_query = "SELECT Postcode, City FROM Customer WHERE ID = ?"
+    # Fetch customer details (city)
+    customer_query = "SELECT City FROM Customer WHERE ID = ?"
     customer_info = execute_query(customer_query, (user_id,), fetch_one=True)
 
     if not customer_info:
         return jsonify({"error": "Customer not found"}), 404
 
-    customer_postcode, customer_city = customer_info
+    customer_city = customer_info[0].strip()
 
+    # Fetch restaurant details (city and delivery areas)
     restaurant_query = """
-    SELECT DISTINCT Restaurant.Postcode, Restaurant.City 
+    SELECT Restaurant.City, Restaurant.Delivery_Areas
     FROM Restaurant 
     JOIN Cart ON Restaurant.ID = Cart.Restaurant_id 
     WHERE Cart.Customer_id = ?
     """
     restaurant_info = execute_query(restaurant_query, (user_id,), fetch_one=True)
 
-    if not restaurant_info:
-        return jsonify({"error": "No restaurant found for this cart"}), 404
+    if not restaurant_info or len(restaurant_info) < 2:
+        return jsonify({"error": "Incomplete restaurant information"}), 404
 
-    restaurant_postcode, restaurant_city = restaurant_info
+    restaurant_city, restaurant_delivery_areas = restaurant_info
+    restaurant_city = restaurant_city.strip()
+    restaurant_delivery_areas = restaurant_delivery_areas.strip()
 
-    # Determine delivery fee
-    if str(customer_postcode).strip() == str(restaurant_postcode).strip() and customer_city.strip().lower() == restaurant_city.strip().lower():
-        delivery_fee = 0.00
-    elif str(customer_postcode).strip() != str(restaurant_postcode).strip() and customer_city.strip().lower() == restaurant_city.strip().lower():
-        delivery_fee = 3.00
-    else:
-        delivery_fee = 7.00
+    # Determine the delivery fee
+    if not can_deliver_to_user(restaurant_city, customer_city, restaurant_delivery_areas):
+        return jsonify({"error": "Delivery unavailable to your city"}), 400
+
+    delivery_fee = 0.00 if restaurant_city.lower() == customer_city.lower() else 2.00
 
     # Calculate the subtotal
     query_subtotal = """
