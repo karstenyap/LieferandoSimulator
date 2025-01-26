@@ -12,10 +12,18 @@
         <nav>
             <ul>
                 <li><a href="{{ url_for('browse_restaurants') }}">Browse</a></li>
-                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                <li><a href="{{ url_for('logout') }}">Sign out</a></li>
             </ul>
         </nav>
     </header>
+
+    <button class="back-button" onclick="history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </button>
+    
     <main>
         {% if orders %}
         <div class="orders-container">
@@ -40,7 +48,7 @@
                     </div>
                     <div class="price-status">
                         <p class="total">Total: €{{ '%.2f' | format(order.Total_Amount) }}</p>
-                        <p class="status {{ order.Order_Status|lower }}">{{ order.Order_Status }}</p>
+                        <p class="status {{ order.Order_Status | lower | replace(' ', '-') }}">{{ order.Order_Status }}</p>
                     </div>
                 </div>
             </div>
