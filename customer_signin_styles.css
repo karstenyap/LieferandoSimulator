@@ -1,0 +1,127 @@
+/* Import Fredoka One from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredoka One', Arial, sans-serif; /* Apply the font */
+    background-image: url('/static/background.JPG');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    color: #333;
+    display: flex;
+    flex-direction: column; /* Stack header and container vertically */
+    align-items: center; /* Center elements horizontally */
+    justify-content: center; /* Center elements vertically */
+    height: 100vh;
+    text-align: center;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    padding: 20px; /* Add padding around the body */
+}
+
+/* Header Styles */
+header {
+    margin-bottom: 40px; /* Space between header and container */
+}
+
+h1 {
+    font-size: 64px;
+    margin: 0;
+    color: #333;
+}
+
+/* Container Styles */
+.container {
+    width: 100%;
+    max-width: 500px; /* Constrain the container width */
+    padding: 20px;
+    background: transparent; /* Slight transparency for contrast */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; /* Ensure padding is inside the element */
+    text-align: left;
+}
+
+/* Form Labels */
+label {
+    display: block;
+    font-size: 18px; /* Adjusted label font size */
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Input Field Styles */
+input[type="email"],
+input[type="password"] {
+    font-family: inherit;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%; /* Ensure inputs take full width */
+    height: 50px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 15px; /* Add spacing between inputs */
+}
+
+/* Input Focus Styles */
+input:focus {
+    outline: none;
+    border-color: #7f5af0; /* Add focus color */
+    box-shadow: 0 0 5px rgba(127, 90, 240, 0.5);
+}
+
+/* Duck Styles */
+#duck {
+    position: relative; /* Position beside the title */
+    width: 140px; /* Adjust duck size */
+    height: auto; /* Maintain aspect ratio */
+    margin-left: 15px; /* Space between title and duck */
+    transition: transform 0.3s ease, filter 0.3s ease; /* Smooth hover effects */
+    cursor: pointer; /* Indicate interactivity */
+    transition: all 0.3s ease-in-out;
+}
+
+#duck:hover {
+    transform: scale(1.2); /* Grow slightly */
+    filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.8)); /* Add glowing effect */
+}
+
+/* Login Button */
+.login-btn {
+    font-family: inherit;
+    padding: 12px 24px;
+    background: linear-gradient(145deg, #e8d6f0, #d6c4e8); /* Pastel purple gradient */
+    color: #333; /* Dark text for readability */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1), -2px -2px 10px rgba(255, 255, 255, 0.8);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100%; /* Make the button full width */
+}
+
+.login-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.2), -3px -3px 12px rgba(255, 255, 255, 0.7);
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 48px; /* Reduce title size for smaller screens */
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .login-btn {
+        font-size: 0.9rem; /* Adjust button font size */
+    }
+}
