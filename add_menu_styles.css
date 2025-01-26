@@ -64,6 +64,31 @@ nav ul li a:hover {
     background: linear-gradient(145deg, #f4dff0, #ffebff);
 }
 
+.back-button {
+    position: fixed; 
+    top: 10px;      
+    left: 10px;     
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px;
+    color: #007BFF; 
+    transition: color 0.2s ease;
+    z-index: 1000; 
+}
+
+.back-button:hover {
+    color: #0056b3; 
+}
+
+.arrow-icon {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor; 
+}
+
 /* Form Container */
 /* Form Container */
 .container {
