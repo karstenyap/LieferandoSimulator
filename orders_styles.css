@@ -64,6 +64,32 @@ nav ul li a:hover {
     box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.2), -3px -3px 12px rgba(255, 255, 255, 0.7);
 }
 
+/* Back Button */
+.back-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px;
+    color: #007BFF;
+    transition: color 0.2s ease;
+    z-index: 1000;
+}
+
+.back-button:hover {
+    color: #0056b3;
+}
+
+.arrow-icon {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+}
+
 /* Main Content */
 main {
     padding: 40px 20px;
@@ -154,23 +180,23 @@ main {
 .status {
     padding: 5px 10px;
     border-radius: 5px;
-    font-size: 14px;
+    font-size: 18px;
     text-transform: capitalize;
 }
 
-.status.pending {
-    background-color: #f39c12;
-    color: white;
+.status.pending, .status.status.in-preparation{
+    background-color: #f3d097;
+    color: #333;
 }
 
 .status.completed {
-    background-color: #2ecc71;
-    color: white;
+    background-color: #a9f1c7;
+    color: #333;
 }
 
 .status.cancelled {
-    background-color: #e74c3c;
-    color: white;
+    background-color: #f8968b;
+    color: #333;
 }
 
 /* Empty Orders Message */
