@@ -34,7 +34,7 @@ function deleteMenuItem(button) {
                 
                 // Redirect to menu management after a delay
                 setTimeout(() => {
-                    window.location.href = '/menu_management';
+                    window.location.href = '/menu-management';
                 }, 3000); // 3 seconds delay
             } else {
                 alert('Failed to delete the menu item. Please try again.');
@@ -49,9 +49,4 @@ function deleteMenuItem(button) {
 function showNotification() {
     const notification = document.getElementById('notification');
     notification.style.display = 'block';
-}
-
-function closeNotification() {
-    const notification = document.getElementById('notification');
-    notification.style.display = 'none';
 }
