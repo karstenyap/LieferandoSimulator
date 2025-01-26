@@ -9,13 +9,21 @@
 <body>
     <header>
         <h1>Order Management</h1>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('menu_or_order') }}">Dashboard</a></li>
-                <li><a href="{{ url_for('restaurant_logout') }}">Logout</a></li>
-            </ul>
-        </nav>
     </header>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('menu_or_order') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('restaurant_logout') }}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <button class="back-button" onclick="history.back()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="arrow-icon">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+    </button>
+    
     <main>
         <section>
             {% if orders %}
@@ -43,9 +51,9 @@
                     {% if order.Order_Status == 'Pending' or order.Order_Status == 'In Preparation' %}
                     <form method="POST" action="{{ url_for('update_order_status') }}">
                         <input type="hidden" name="order_id" value="{{ order.Orders_id }}">
-                        <button type="submit" name="status" value="In Preparation">In Preparation</button>
-                        <button type="submit" name="status" value="Completed">Completed</button>
-                        <button type="submit" name="status" value="Cancelled">Cancel</button>
+                        <button type="submit" name="status" value="In Preparation" class="btn-yellow">In Preparation</button>
+    <button type="submit" name="status" value="Completed" class="btn-green">Completed</button>
+    <button type="submit" name="status" value="Cancelled" class="btn-red">Cancel</button>
                     </form>
                     {% else %}
                         <span>No actions available</span>
