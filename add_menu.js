@@ -1,4 +1,3 @@
-// Initialize Item Count
 let itemCount = 1;
 
 // Add Menu Item Button Event
@@ -11,37 +10,33 @@ document.getElementById('add-menu-item-btn').addEventListener('click', () => {
     itemCount++;
 });
 
-// Delete Last Menu Item Button
 function deleteLastMenuItem() {
     const items = document.querySelectorAll('.menu-item');
-    if (items.length > 0) { // Allow deleting all items
+    if (items.length > 1) { // Prevent deleting the last item
         items[items.length - 1].remove();
         itemCount--;
     }
 }
 
 function updateMenuItemFields(item, index) {
+    item.id = `menu-item-${index}`;
     const fields = ['item_name', 'price', 'description', 'image'];
 
     fields.forEach(field => {
         const input = item.querySelector(`#${field}_0`);
-        input.id = `${field}_${index}`;  // Unique ID for each input
-        input.name = `${field}[]`;        // Ensure the name stays as an array
-        input.value = '';                 // Clear the value in cloned fields
-
-        if (field === 'description') {
-            input.nextElementSibling.id = `description-word-count-${index}`;
-            input.nextElementSibling.textContent = '0/100 words';
-        } else if (field === 'image') {
+        input.id = `${field}_${index}`;
+        input.name = `${field}[]`;
+        input.value = ''; // Clear cloned values
+        if (field === 'image') {
             const preview = item.querySelector(`#image-preview-0`);
+            const uploadText = item.querySelector(`#upload-text-0`);
             preview.id = `image-preview-${index}`;
-            input.setAttribute('onchange', `previewImage(this, 'image-preview-${index}')`);
+            uploadText.id = `upload-text-${index}`;
+            input.setAttribute('onchange', `previewImage(this, 'image-preview-${index}', 'upload-text-${index}')`);
         }
     });
 }
 
-
-// Image Preview Functionality
 function previewImage(input, previewId, uploadTextId) {
     const file = input.files[0];
     const preview = document.getElementById(previewId);
@@ -49,18 +44,11 @@ function previewImage(input, previewId, uploadTextId) {
 
     if (file) {
         const reader = new FileReader();
-
         reader.onload = e => {
             preview.src = e.target.result;
-            preview.style.display = 'block'; // Show the image preview
-            uploadText.style.display = 'none'; // Hide the "Click to Upload" text
+            preview.style.display = 'block';
+            uploadText.style.display = 'none';
         };
-
         reader.readAsDataURL(file);
-    } else {
-        // If no file is selected, reset to default
-        preview.src = '';
-        preview.style.display = 'none';
-        uploadText.style.display = 'block';
     }
 }
